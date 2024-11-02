@@ -72,22 +72,27 @@
 }
 
 /* Card Styles */
-.card {
-    width: 100%;
-    max-width: 300px;
-    border-radius: 15px;
-    overflow: hidden;
-    /* background: rgba(242, 215, 182, 0.63);*/
-    background: rgba(173, 236, 193, 0.7);
-    backdrop-filter: blur(5px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    display: block;
+    .card {
+        width: 100%;
+        max-width: 300px;
+        border-radius: 15px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18); /* Subtle border for glass effect */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Softer shadow for more depth */
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        color: #333; /* Darker text for readability */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-}
-.card:hover{
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    .card:hover {
+        transform: translateY(-5px); /* Lift on hover */
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Deeper shadow on hover */
+    }
 
-}
 
 /* Image Slider */
 .slider {
@@ -148,7 +153,7 @@
 .field-info p {
     margin: 5px 0;
     font-size: 1em;
-    color: #555;
+    color: green;
 }
 
 .view-more-container {
