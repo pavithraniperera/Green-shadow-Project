@@ -193,7 +193,7 @@
 
 <!-- Modal Structure for view more/update/delete -->
 <div class="modal fade" id="fieldDetailModal" tabindex="-1" aria-labelledby="fieldDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg ">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content custom-modal-background">
             <div class="modal-header">
                 <h4 class="modal-title" id="fieldDetailModalLabel" style="font-weight: bolder">Field Details</h4>
@@ -279,7 +279,7 @@
 
 <!-- Add Field Modal -->
 <div class="modal fade" id="addFieldModal" tabindex="-1" role="dialog" aria-labelledby="addFieldModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content add-modal-custom">
             <div class="modal-header">
                 <h4 class="modal-title" id="addFieldModalLabel" style="font-weight: bolder">Add New Field</h4>
@@ -333,7 +333,7 @@
                 <button type="button" class="btn " data-dismiss="modal">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button type="button" class="btn ">
+                <button id="addField" type="button" class="btn ">
                     <i class="fas fa-plus"></i> Add Field
                 </button>
             </div>
@@ -370,24 +370,24 @@
         });
     });
     function toggleEditMode() {
-        const isEditable = document.getElementById("fieldName").readOnly;
-        document.getElementById("fieldName").readOnly = !isEditable;
-        document.getElementById("fieldLocation").readOnly = !isEditable;
-        document.getElementById("fieldSize").readOnly = !isEditable;
-        document.getElementById("crops").disabled = !isEditable;
-        document.getElementById("staff").disabled = !isEditable;
+        $('#fieldDetailModal').modal('hide');
 
-        // Toggle Update and Save Changes buttons
-        document.getElementById("updateBtn").style.display = isEditable ? "none" : "inline-block";
-        document.getElementById("saveBtn").style.display = isEditable ? "inline-block" : "none";
+        // Open the addStaffModal
+        $('#addFieldModal').modal('show');
+
+        // Change the modal header to "Update Member"
+        document.getElementById('addFieldModalLabel').innerText = 'Update Field';
+
+        // Change the button text from "Add Staff" to "Save Changes"
+        const addFieldBtn = document.getElementById('addField');
+        addFieldBtn.innerText = 'Save Changes';
     }
 
     function saveChanges() {
         // Logic for saving changes (e.g., sending updated data to the server)
         console.log("Saving changes...");
 
-        // After saving, disable edit mode
-        toggleEditMode();
+
     }
     // JavaScript to handle image preview
     function previewImage(event, previewId) {
