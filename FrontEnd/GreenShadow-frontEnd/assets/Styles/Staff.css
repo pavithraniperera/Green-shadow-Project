@@ -61,7 +61,7 @@ table tbody tr:hover {
     background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
     border: 1px solid rgba(255, 255, 255, 0.3); /* Border with slight transparency */
     backdrop-filter: blur(10px); /* Adds blur effect */
-    color: #fff; /* White text color */
+    color: green; /* White text color */
     padding: 10px 20px; /* Padding for the button */
     border-radius: 10px; /* Rounded corners */
     text-align: center;
