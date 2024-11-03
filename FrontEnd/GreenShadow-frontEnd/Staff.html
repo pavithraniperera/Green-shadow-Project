@@ -115,7 +115,7 @@
 
 <!-- Staff Details Modal -->
 <div class="modal fade" id="staffDetailModal" tabindex="-1" aria-labelledby="staffDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content custom-modal-background">
             <!-- Modal Header with Staff Name and Icon -->
             <div class="modal-header">
@@ -209,7 +209,7 @@
 <!-- Add New Staff Modal -->
 <!-- Add New Staff Modal -->
 <div class="modal fade" id="addStaffModal" tabindex="-1" role="dialog" aria-labelledby="addStaffModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content add-modal-custom">
             <div class="modal-header">
                 <h4 class="modal-title" id="addStaffModalLabel" style="font-weight: bold">Add New Staff</h4>
@@ -318,7 +318,7 @@
                 <button type="button" class="btn" data-dismiss="modal">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button type="button" class="btn ">
+                <button id="addStaffBtn" type="button" class="btn ">
                     <i class="fas fa-plus"></i> Add Staff
                 </button>
             </div>
@@ -334,6 +334,26 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
+
+    function toggleEditMode() {
+        // Close the staffDetailModal
+        $('#staffDetailModal').modal('hide');
+
+        // Open the addStaffModal
+        $('#addStaffModal').modal('show');
+
+        // Change the modal header to "Update Member"
+        document.getElementById('addStaffModalLabel').innerText = 'Update Member';
+
+        // Change the button text from "Add Staff" to "Save Changes"
+        const addStaffBtn = document.getElementById('addStaffBtn');
+        addStaffBtn.innerText = 'Save Changes';
+        //addStaffBtn.onclick = saveChanges;
+
+        // Optionally, populate the addStaffForm with existing staff details
+        // populateStaffForm();
+    }
+
     document.getElementById('staffSearch').addEventListener('input', function () {
         const filter = this.value.toLowerCase();
         const rows = document.querySelectorAll('.staff-table tbody tr');
