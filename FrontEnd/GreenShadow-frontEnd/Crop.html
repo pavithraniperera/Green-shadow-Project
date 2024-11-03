@@ -154,7 +154,7 @@
 
 <!-- Modal Structure for View More/Update/Delete Crop -->
 <div class="modal fade" id="cropDetailModal" tabindex="-1" aria-labelledby="cropDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content custom-modal-background">
             <!-- Modal Header with Crop Image at the Top -->
             <div class="modal-header">
@@ -214,7 +214,7 @@
                 <button type="button" class="btn" data-dismiss="modal">
                     <i class="fas fa-times-circle"></i> Close
                 </button>
-                <button type="button" class="btn" id="updateBtn" onclick="toggleEditMode()">
+                <button type="button" class="btn" id="updateBtn" onclick="toggleEditCropMode()">
                     <i class="fas fa-edit"></i> Update
                 </button>
                 <button type="button" class="btn" id="deleteBtn">
@@ -230,7 +230,7 @@
 
 <!-- Add Crop Modal -->
 <div class="modal fade" id="addCropModal" tabindex="-1" role="dialog" aria-labelledby="addCropModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content add-modal-custom">
             <div class="modal-header">
                 <h4 class="modal-title" id="addCropModalLabel" style="font-weight: bolder">Add New Crop</h4>
@@ -301,7 +301,7 @@
                 <button type="button" class="btn" data-dismiss="modal">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button type="button" class="btn" >
+                <button id="addCrop" type="button" class="btn" >
                     <i class="fas fa-plus"></i> Add Crop
                 </button>
             </div>
@@ -318,9 +318,18 @@
     }
 
     // Function to open the Add Field Modal
-    function openAddFieldModal() {
-        $('#addFieldModal').modal('show');
+    function toggleEditCropMode() {
+        $("#cropDetailModal").modal('hide')
+
+        $('#addCropModal').modal('show');
+        document.getElementById('addCropModalLabel').innerText = 'Update Crop Details';
+
+        // Change the button text from "Add Staff" to "Save Changes"
+        const addCropBtn = document.getElementById('addCrop');
+        addCropBtn.innerText = 'Save Changes'
     }
+
+
 </script>
 
 
