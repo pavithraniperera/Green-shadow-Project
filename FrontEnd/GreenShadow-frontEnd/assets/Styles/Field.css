@@ -247,11 +247,11 @@
     padding: 20px; /* Adds spacing */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
-#fieldCode,#fieldName,#fieldSize,#crops,#staff,#fieldLocation,.glass-input,#location,#cropDetailForm input{
+#fieldCode,#fieldName,#fieldSize,#crops,#staff,#fieldLocation,.glass-input,#location,#cropDetailForm input,#staffDetailForm input{
     background-color: rgba(138, 211, 141, 0.24);
     backdrop-filter: blur(10px);
 }
-#fieldDetailModal label , #addFieldModal label , #cropDetailForm label{
+#fieldDetailModal label , #addFieldModal label , #cropDetailForm label, #staffDetailForm label{
     font-size: 18px;
     font-weight: 120;
     font-family: "Itim", cursive;
