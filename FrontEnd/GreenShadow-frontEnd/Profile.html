@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/Styles/dashboard.css">
+    <link rel="stylesheet" href="assets/Styles/Field.css">
+    <link rel="stylesheet" href="assets/Styles/Staff.css">
+    <link rel="stylesheet" href="assets/Styles/Profile.css">
+    <title>Profile Details</title>
+
+</head>
+<body>
+<div class="top-navbar d-md-none d-flex justify-content-between align-items-center">
+  <span class="menu-toggle">
+            <i class="fas fa-bars fa-lg"></i>
+            <i class="fa-solid fa-bell"></i>
+            <i class="fa-solid fa-user"></i>
+
+  </span>
+    <img src="assets/images/greenshadowlogo-02.png" alt="Green Shadow Logo" class="img-fluid" style="height: 40px;">
+</div>
+<!-- Sidebar -->
+<nav class="sidebar  border-right d-md-block d-none">
+    <div class="sidebar-header p-3">
+        <img src="assets/images/greenshadowlogo-02.png" alt="Green Shadow Logo" class="img-fluid">
+    </div>
+    <ul class="list-unstyled p-2">
+        <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#"><i class="fas fa-leaf"></i> Field Management</a></li>
+        <li><a href="#"><i class="fas fa-seedling"></i> Crops Management</a></li>
+        <li><a href="#"><i class="fas fa-users"></i> Staff</a></li>
+        <li><a href="#"><i class="fas fa-book-open"></i> Monitoring Logs</a></li>
+        <li><a href="#"><i class="fas fa-truck"></i> Vehicles</a></li>
+        <li><a href="#"><i class="fas fa-tools"></i> Equipment</a></li>
+        <li><a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a></li>
+    </ul>
+</nav>
+<div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-light bg-light mb-4">
+        <span class="navbar-brand dashboard-topic">Profile</span>
+        <div class="profile-icon">
+            <i class="fa-solid fa-bell"></i>
+            <i class="fa-solid fa-user"></i>
+
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <h3>My Profile</h3>
+
+        </div>
+
+        <div class="profile-fields">
+            <!-- Staff ID (Read-only) -->
+            <div class="profile-field">
+                <label for="staffId">Staff ID:</label>
+                <input type="text" id="staffId" value="S12345" readonly>
+            </div>
+
+            <!-- First Name -->
+            <div class="profile-field">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" value="John" readonly>
+            </div>
+
+            <!-- Last Name -->
+            <div class="profile-field">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" value="Doe" readonly>
+            </div>
+
+            <!-- Designation -->
+            <div class="profile-field">
+                <label for="designation">Designation:</label>
+                <input type="text" id="designation" value="Manager" readonly>
+            </div>
+
+            <!-- Gender -->
+            <div class="profile-field">
+                <label for="gender">Gender:</label>
+                <select id="gender" disabled>
+                    <option selected>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="profile-field">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" value="1990-01-01" readonly>
+            </div>
+
+            <!-- Joined Date -->
+            <div class="profile-field">
+                <label for="joinedDate">Joined Date:</label>
+                <input type="date" id="joinedDate" value="2020-06-15" readonly>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="profile-field">
+                <label for="contactNo">Contact No.:</label>
+                <input type="text" id="contactNo" value="+1 234 567 890" readonly>
+            </div>
+
+            <!-- Email -->
+            <div class="profile-field">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="john.doe@example.com" readonly>
+            </div>
+
+            <!-- Role -->
+            <div class="profile-field">
+                <label for="role">Role:</label>
+                <select id="role" disabled>
+                    <option selected>Manager</option>
+                    <option>Administrative</option>
+                    <option>Scientist</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <!-- Address Lines -->
+            <div class="profile-field">
+                <label for="addressLine1">Address Line 1:</label>
+                <input type="text" id="addressLine1" value="123 Main St" readonly>
+            </div>
+            <div class="profile-field">
+                <label for="addressLine2">Address Line 2:</label>
+                <input type="text" id="addressLine2" value="Apt 101" readonly>
+            </div>
+            <div class="profile-field">
+                <label for="addressLine3">Address Line 3:</label>
+                <input type="text" id="addressLine3" value="Springfield" readonly>
+            </div>
+            <div class="profile-field">
+                <label for="addressLine4">Address Line 4:</label>
+                <input type="text" id="addressLine4" value="IL, 62701" readonly>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <button id="saveChangesBtn" class="save-btn custom-btn" onclick="saveProfile()" style="display:none;">Save Changes</button>
+            <button id="deleteAccountBtn" class="delete-btn custom-btn " onclick="deleteAccount()">Delete Account</button>
+            <button id="editProfileBtn" class="edit-btn custom-btn" onclick="toggleEditMode()">Edit Profile</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    function toggleEditMode() {
+        const inputs = document.querySelectorAll('.profile-field input, .profile-field select');
+        inputs.forEach(input => {
+            if (input.id !== 'role') { // Skip the role field
+                input.readOnly = !input.readOnly;
+            }
+        });
+        document.getElementById('saveChangesBtn').style.display = 'inline';
+        document.getElementById('editProfileBtn').style.display = 'none';
+    }
+
+
+    function saveProfile() {
+        // Logic to save profile
+        alert("Profile changes saved.");
+    }
+
+        function deleteAccount() {
+        // Logic to delete account
+        alert("Account deleted.");
+    }
+
+</script>
+
+</body>
+</html>
