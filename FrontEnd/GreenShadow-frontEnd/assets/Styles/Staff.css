@@ -6,7 +6,7 @@
 }
 
 /* Glass-look table styling */
-.staff-table,.vehicle-table {
+.staff-table,.vehicle-table,.equipment-table {
     width: 100%;
     border-collapse: collapse;
     margin: 0 auto;
@@ -18,7 +18,7 @@
 }
 
 /* Table headers */
-.staff-table th ,.vehicle-table th{
+.staff-table th ,.vehicle-table th,.equipment-table th{
     padding: 12px;
     text-align: left;
     background: rgba(255, 255, 255, 0.4); /* Slightly darker for headers */
@@ -27,14 +27,14 @@
 }
 
 /* Table data */
-.staff-table td ,.vehicle-table td{
+.staff-table td ,.vehicle-table td,.equipment-table td{
     padding: 12px;
     color: green;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Table rows hover effect */
-.staff-table tbody tr:hover,.vehicle-table tbody tr:hover {
+.staff-table tbody tr:hover,.vehicle-table tbody tr:hover,.equipment-table tbody tr:hover {
     background: rgba(255, 255, 255, 0.3); /* Slightly darker on hover */
     cursor: pointer;
 }

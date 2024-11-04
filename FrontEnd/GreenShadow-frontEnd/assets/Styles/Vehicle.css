@@ -1,5 +1,5 @@
 
-.vehicle-container {
+.vehicle-container ,.equipment-container{
     position: relative;
     padding: 20px;
     display: flex;
@@ -11,7 +11,7 @@
 }
 
 /* Filter container positioned at the top-right corner */
-.vehicle-filter-container {
+.vehicle-filter-container,.equipment-filter-container {
     position: absolute;
     top: 20px;
     right: 20px;
@@ -47,16 +47,17 @@
 }
 
 /* Centered table styling */
-.vehicle-table-wrapper {
+.vehicle-table-wrapper,.equipment-table-wrapper {
     width: 100%;
     display: flex;
     justify-content: center;
     margin-top: 60px; /* Adjust to provide space for filter box */
+
 }
 
 
 /* Increase column width */
-.vehicle-table th, .vehicle-table td {
-    width: 300px;
+.vehicle-table th, .vehicle-table td,.equipment-table td {
+    max-width: 300px;
 }
 
