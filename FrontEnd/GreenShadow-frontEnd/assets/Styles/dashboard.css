@@ -28,15 +28,16 @@ body {
     margin: 2rem 0;
 
 }
-.sidebar ul li a {
+.sidebar ul li span {
     padding: 10px 15px;
     display: block;
     text-decoration: none;
     font-size: 20px;
     color: #FAF5E6;
 }
-.sidebar ul li a:hover {
+.sidebar ul li span:hover {
     background: #57744b;
+    cursor: pointer;
 }
 .main-content {
     margin-left: 250px;

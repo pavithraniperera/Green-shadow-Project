@@ -48,7 +48,7 @@
  margin: 0 auto;
 }
 
-.form-group {
+.form-group-custom {
   display: flex;
   align-items: center;
   position: relative;
@@ -63,7 +63,7 @@
   font-size: 20px;
 }
 
-.form-control {
+.form-control-custom {
   flex: 1; /* Makes the input field take the remaining width */
   padding-left: 40px; /* Extra padding to make room for the icon */
   border-radius: 25px;
