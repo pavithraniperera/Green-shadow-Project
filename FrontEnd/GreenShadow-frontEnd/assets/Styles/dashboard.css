@@ -44,6 +44,10 @@ body {
     transition: margin-left 0.3s ease;
 
 }
+.custom-nav{
+    margin-left: 250px;
+
+}
 .dashboard-cards{
     margin-top: 40px;
 }
@@ -103,6 +107,9 @@ body {
         top: 61px;
 
     }
+    .dashboard-cards{
+        margin-top: 60px;
+    }
     .main-content {
         margin-left: 0;
     }
@@ -115,9 +122,13 @@ body {
         background: #f7f7f7;
         padding: 10px 20px;
         border-bottom: 1px solid #ddd;
+        margin-bottom: 2rem;
     }
     .top-navbar .menu-toggle {
         cursor: pointer;
+    }
+    .custom-nav{
+        display: none;
     }
 
 }
