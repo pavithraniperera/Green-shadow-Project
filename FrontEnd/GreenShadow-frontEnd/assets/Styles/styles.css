@@ -2,8 +2,8 @@
     background-color: #8fa98f;
   }
   
-  .container {
-    max-width: 1000px;
+  .custom-container {
+    max-width: 1100px;
   }
   .welcome{
     font-family: "Itim", cursive;
@@ -12,7 +12,7 @@
     font-style: normal;
 
   }
-  
+
   .login-card {
     display: flex;
     border-radius: 10px;
