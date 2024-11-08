@@ -3,9 +3,12 @@ package lk.ijse.greenshadowbacend.Service.impl;
 import lk.ijse.greenshadowbacend.Dto.UserStatus;
 import lk.ijse.greenshadowbacend.Dto.impl.UserDto;
 import lk.ijse.greenshadowbacend.Service.UserService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+@Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Override
