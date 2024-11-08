@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
     @Id
     private String userId;
-    private String username;
+    @Column(unique = true)
+    private String email;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
