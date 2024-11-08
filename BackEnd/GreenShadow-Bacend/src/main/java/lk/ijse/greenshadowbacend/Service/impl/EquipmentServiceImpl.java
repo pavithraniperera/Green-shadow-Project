@@ -11,12 +11,12 @@ import java.util.List;
 public class EquipmentServiceImpl implements EquipmentService {
     @Override
     public EquipmentDto save(EquipmentDto dto) {
-        return null;
+      return null;
     }
 
     @Override
     public EquipmentDto update(String id, EquipmentDto dto) {
-        return null;
+            return null;
     }
 
     @Override
