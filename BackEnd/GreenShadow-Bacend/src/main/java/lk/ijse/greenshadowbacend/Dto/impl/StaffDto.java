@@ -1,8 +1,9 @@
-package lk.ijse.greenshadowbacend.Dto;
+package lk.ijse.greenshadowbacend.Dto.impl;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
+import lk.ijse.greenshadowbacend.Dto.StaffStatus;
 import lk.ijse.greenshadowbacend.Entity.Role;
 import lk.ijse.greenshadowbacend.Entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.sql.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StaffDto {
+public class StaffDto implements StaffStatus {
     private String staffId;
     private String firstName;
     private String lastName;

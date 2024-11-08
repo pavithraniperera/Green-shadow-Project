@@ -1,5 +1,6 @@
-package lk.ijse.greenshadowbacend.Dto;
+package lk.ijse.greenshadowbacend.Dto.impl;
 
+import lk.ijse.greenshadowbacend.Dto.LogStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class LogDto {
+public class LogDto implements LogStatus {
     private String logId;
     private String logDetails;
     private Date date;

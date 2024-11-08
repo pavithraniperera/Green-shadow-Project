@@ -1,6 +1,6 @@
 package lk.ijse.greenshadowbacend.Util;
 
-import lk.ijse.greenshadowbacend.Dto.*;
+import lk.ijse.greenshadowbacend.Dto.impl.*;
 import lk.ijse.greenshadowbacend.Entity.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

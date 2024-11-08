@@ -1,5 +1,6 @@
-package lk.ijse.greenshadowbacend.Dto;
+package lk.ijse.greenshadowbacend.Dto.impl;
 
+import lk.ijse.greenshadowbacend.Dto.VehicleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class VehicleDto {
+public class VehicleDto implements VehicleStatus {
     private String vehicleId;
     private String plateNumber;
     private String category;
