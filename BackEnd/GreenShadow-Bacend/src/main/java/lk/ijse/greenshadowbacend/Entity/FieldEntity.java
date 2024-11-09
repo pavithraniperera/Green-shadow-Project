@@ -19,7 +19,7 @@ public class FieldEntity {
     @Id
     private String FieldId;
     private String name;
-    private Point location;
+    private String location;
     private Double size;
     @Column(columnDefinition = "LONGTEXT")
     private String image1;
