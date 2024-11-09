@@ -1,8 +1,13 @@
 package lk.ijse.greenshadowbacend.Service.impl;
 
+import lk.ijse.greenshadowbacend.Dao.UserDao;
 import lk.ijse.greenshadowbacend.Dto.UserStatus;
 import lk.ijse.greenshadowbacend.Dto.impl.UserDto;
+import lk.ijse.greenshadowbacend.Entity.UserEntity;
 import lk.ijse.greenshadowbacend.Service.UserService;
+import lk.ijse.greenshadowbacend.Util.AppUtil;
+import lk.ijse.greenshadowbacend.Util.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,10 +15,15 @@ import java.util.List;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private UserDao userDao ;
+    @Autowired
+    private Mapping userMapping;
 
     @Override
     public UserDto save(UserDto dto) {
-        return null;
+        dto.setId(AppUtil.generateUserId());
+        return userMapping.toUserDto(userDao.save(userMapping.toUserEntity(dto)));
     }
 
     @Override
@@ -33,6 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAll() {
-        return null;
+        return userMapping.asUserDtoList(userDao.findAll());
     }
 }
