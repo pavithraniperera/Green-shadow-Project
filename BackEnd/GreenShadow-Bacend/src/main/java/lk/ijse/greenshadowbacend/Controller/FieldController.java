@@ -1,10 +1,13 @@
 package lk.ijse.greenshadowbacend.Controller;
 
 
+import ch.qos.logback.core.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
+import lk.ijse.greenshadowbacend.Exception.FieldNotFoundException;
 import lk.ijse.greenshadowbacend.Service.FieldService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
+import lk.ijse.greenshadowbacend.Util.RegexUtilForId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/fields")
@@ -26,6 +30,7 @@ public class FieldController {
             @RequestParam("image2") MultipartFile image2
     ) {
         try {
+            System.out.println(fieldData);
             // Convert fieldData JSON string to FieldDto object
             ObjectMapper objectMapper = new ObjectMapper();
             FieldDto fieldDto = objectMapper.readValue(fieldData, FieldDto.class);
@@ -38,13 +43,14 @@ public class FieldController {
             if (!image2.isEmpty()) {
                 fieldDto.setImage2(AppUtil.imageToBase64(image2.getBytes()));
             }
-            System.out.println(fieldDto);
+            System.out.println(fieldData);
 
             // Save field
             fieldService.save(fieldDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("Field created successfully");
 
         } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing images or field data");
         }
     }
@@ -79,5 +85,44 @@ public class FieldController {
     }
 
 
+    @DeleteMapping("/{fieldId}")
+    public ResponseEntity<String> deleteField(@PathVariable("fieldId") String fieldId) {
+        try{
+            if (!RegexUtilForId.isValidFieldId(fieldId)){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                fieldService.delete(fieldId);
+                return new ResponseEntity<>("Field deleted successfully.", HttpStatus.NO_CONTENT);
+            }
+        }catch (FieldNotFoundException e){
+            return new ResponseEntity<>("Field not found.", HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<FieldDto> getAllUsers(){
+        return fieldService.findAll();
+    }
+
+    @GetMapping(value = "/{fieldId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getFieldById(@PathVariable("fieldId") String fieldId) {
+        // Validate field ID format using RegexUtilForId
+        if (!RegexUtilForId.isValidFieldId(fieldId)) {
+            return new ResponseEntity<>( "Field ID format is invalid", HttpStatus.BAD_REQUEST);
+        }
+
+        // Retrieve the field
+        FieldDto fieldDto = fieldService.findById(fieldId);
+        if (fieldDto == null) {
+            return new ResponseEntity<>( "Field not found", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(fieldDto, HttpStatus.OK);
+    }
 
 }

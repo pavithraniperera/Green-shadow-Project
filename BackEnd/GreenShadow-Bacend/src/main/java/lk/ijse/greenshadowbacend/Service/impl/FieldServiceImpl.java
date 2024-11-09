@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 public class FieldServiceImpl implements FieldService {
@@ -54,17 +56,22 @@ public class FieldServiceImpl implements FieldService {
 
     @Override
     public void delete(String id) {
+        fieldDao.deleteById(id);
 
     }
 
     @Override
     public FieldDto findById(String id) {
+        Optional<FieldEntity> byId = fieldDao.findById(id);
+        if (byId.isPresent()){
+            return fieldMapping.toFieldDto(byId.get());
+        }
         return null;
     }
 
     @Override
     public List<FieldDto> findAll() {
-        return null;
+        return fieldMapping.asFieldDtoList(fieldDao.findAll());
     }
 
 
