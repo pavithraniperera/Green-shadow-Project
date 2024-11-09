@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CropDto implements CropStatus {
-    private Long id;
+    private String id;
     private String commonName;
     private String specificName;
     private String category;
