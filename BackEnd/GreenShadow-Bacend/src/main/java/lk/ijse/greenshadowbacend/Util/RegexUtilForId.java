@@ -2,7 +2,7 @@ package lk.ijse.greenshadowbacend.Util;
 
 import java.util.regex.Pattern;
 
-public class RegexUtil {
+public class RegexUtilForId {
     // Base regex for validating IDs with a prefix and UUID (e.g., USER-0be201fe-e1e1-42bd-86cb-5afcb602f841)
     private static final String PREFIX_UUID_REGEX = "^[A-Z]+-[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$";
 
