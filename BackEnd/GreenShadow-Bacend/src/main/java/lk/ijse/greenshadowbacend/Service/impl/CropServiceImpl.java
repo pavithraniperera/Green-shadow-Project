@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 public class CropServiceImpl implements CropService {
@@ -58,16 +60,21 @@ public class CropServiceImpl implements CropService {
 
     @Override
     public void delete(String id) {
+        cropDao.deleteById(id);
 
     }
 
     @Override
     public CropDto findById(String id) {
+        Optional<CropEntity> byId = cropDao.findById(id);
+        if (byId.isPresent()){
+            return cropMapping.toCropDto(byId.get());
+        }
         return null;
     }
 
     @Override
     public List<CropDto> findAll() {
-        return null;
+        return cropMapping.asCropDtoList(cropDao.findAll());
     }
 }

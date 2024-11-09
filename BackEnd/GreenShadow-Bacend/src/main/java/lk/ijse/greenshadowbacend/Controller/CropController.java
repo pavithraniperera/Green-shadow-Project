@@ -2,6 +2,9 @@ package lk.ijse.greenshadowbacend.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lk.ijse.greenshadowbacend.Dto.impl.CropDto;
+import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
+import lk.ijse.greenshadowbacend.Exception.CropNotFoundException;
+import lk.ijse.greenshadowbacend.Exception.FieldNotFoundException;
 import lk.ijse.greenshadowbacend.Service.CropService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.RegexUtilForId;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/crops")
@@ -77,10 +81,50 @@ public class CropController {
             // Call the service to update the field
             cropService.update(cropId, cropDto);
 
-            return ResponseEntity.status(HttpStatus.OK).body("Field updated successfully");
+            return ResponseEntity.status(HttpStatus.OK).body("Crop updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating field: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating Crop: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/{cropId}")
+    public ResponseEntity<String> deleteCrop(@PathVariable("cropId") String cropId) {
+        System.out.println("ok");
+        try{
+            if (!RegexUtilForId.isValidCropId(cropId)){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                cropService.delete(cropId);
+                return new ResponseEntity<>("Crop deleted successfully.", HttpStatus.NO_CONTENT);
+            }
+        }catch (CropNotFoundException e){
+            return new ResponseEntity<>("Crop not found.", HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CropDto> getAllUsers(){
+        return cropService.findAll();
+    }
+
+    @GetMapping(value = "/{cropId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getCropById(@PathVariable("cropId") String cropId) {
+        // Validate field ID format using RegexUtilForId
+        if (!RegexUtilForId.isValidCropId(cropId)) {
+            return new ResponseEntity<>( "Crop ID format is invalid", HttpStatus.BAD_REQUEST);
+        }
+
+        // Retrieve the field
+        CropDto cropDto = cropService.findById(cropId);
+        if (cropDto == null) {
+            return new ResponseEntity<>( "Crop not found", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(cropDto, HttpStatus.OK);
+    }
+
 
 }
