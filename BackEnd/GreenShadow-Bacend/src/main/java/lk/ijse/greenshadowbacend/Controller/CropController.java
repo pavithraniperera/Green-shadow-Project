@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -54,6 +51,36 @@ public class CropController {
         }
 
 
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateCrop(
+            @PathVariable("id") String cropId,
+            @RequestParam("cropData") String cropData,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile)
+             {
+
+        try {
+            if (!RegexUtilForId.isValidCropId(cropId)){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            // Convert fieldData JSON string to FieldDto object
+            ObjectMapper objectMapper = new ObjectMapper();
+            CropDto cropDto = objectMapper.readValue(cropData, CropDto.class);
+
+            // Convert images to Base64 if provided and set them in the DTO
+            if (imageFile != null && !imageFile.isEmpty()) {
+                cropDto.setImage1(AppUtil.imageToBase64(imageFile.getBytes()));
+            }
+
+
+            // Call the service to update the field
+            cropService.update(cropId, cropDto);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Field updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating field: " + e.getMessage());
+        }
     }
 
 }
