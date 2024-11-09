@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(String id, UserDto dto) {
-        return null;
+        return userMapping.toUserDto(userDao.save(userMapping.toUserEntity(dto)));
     }
 
     @Override

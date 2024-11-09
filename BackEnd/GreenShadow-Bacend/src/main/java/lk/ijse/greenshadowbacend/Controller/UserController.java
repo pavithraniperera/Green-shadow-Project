@@ -78,6 +78,33 @@ public class UserController {
         }
 
     }
+    @PutMapping(value = "/{email}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable("email") String email, @RequestBody UserDto userDto) {
+        // Validate email format
+        if (!Pattern.matches(String.valueOf(Regex.getEmailPattern()), email)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Invalid email format
+        }
+
+        // Check if the user exists
+        Optional<UserDto> userDtoOptional = userService.findByEmail(email);
+        if (userDtoOptional.isPresent()) {
+            UserDto user = userDtoOptional.get();
+
+            // Update fields in userEntity based on userDto
+            user.setEmail(userDto.getEmail());  // Assuming email is allowed to be updated
+            user.setPassword(userDto.getPassword()); // Update password
+            user.setRole(userDto.getRole()); // Update role if necessary
+
+
+            // Save the updated entity back to the database
+            UserDto updatedUser = userService.update(user.getId(),user);
+
+
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK); // Success
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // User with email not found
+        }
+    }
 
 
 }
