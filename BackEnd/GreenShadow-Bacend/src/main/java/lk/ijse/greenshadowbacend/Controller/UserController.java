@@ -2,8 +2,10 @@ package lk.ijse.greenshadowbacend.Controller;
 
 import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Dto.impl.UserDto;
+import lk.ijse.greenshadowbacend.Entity.UserEntity;
 import lk.ijse.greenshadowbacend.Service.StaffService;
 import lk.ijse.greenshadowbacend.Service.UserService;
+import lk.ijse.greenshadowbacend.Util.Regex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -55,6 +58,25 @@ public class UserController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDto> getAllUsers(){
         return userService.findAll();
+    }
+    @DeleteMapping(value = "/{email}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("email") String email){
+
+        //validate email
+          if (!Pattern.matches(String.valueOf(Regex.getEmailPattern()),email)){
+              return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Invalid email format
+          }
+        // Fetch user by email
+        Optional<UserDto> userDtoOptional = userService.findByEmail(email);
+        if (userDtoOptional.isPresent()) {
+            // Get the user's ID
+            String userId = userDtoOptional.get().getId();
+            userService.delete(userId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // User with email not found
+        }
+
     }
 
 
