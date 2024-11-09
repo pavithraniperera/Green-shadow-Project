@@ -2,6 +2,7 @@ package lk.ijse.greenshadowbacend.Service.impl;
 
 import lk.ijse.greenshadowbacend.Dao.FieldDao;
 import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
+import lk.ijse.greenshadowbacend.Entity.FieldEntity;
 import lk.ijse.greenshadowbacend.Service.FieldService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
@@ -28,7 +29,27 @@ public class FieldServiceImpl implements FieldService {
 
     @Override
     public FieldDto update(String id, FieldDto dto) {
-return  null;
+        FieldEntity existingField = fieldDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + id));
+
+        // Update basic field properties
+        existingField.setName(dto.getName());
+        existingField.setSize(dto.getSize());
+        existingField.setLocation(dto.getLocation());
+
+
+        // Handle images if provided
+        if (dto.getImage1() != null) {
+            existingField.setImage1(dto.getImage1());
+        }
+
+        if (dto.getImage2() != null) {
+            existingField.setImage2(dto.getImage2());
+        }
+
+        // Save the updated field entity
+        return fieldMapping.toFieldDto(fieldDao.save(existingField));
+
     }
 
     @Override

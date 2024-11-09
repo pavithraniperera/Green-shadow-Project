@@ -4,9 +4,8 @@ import lk.ijse.greenshadowbacend.Dto.FieldStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.geo.Point;
+import org.locationtech.jts.geom.Point;
 
-import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
