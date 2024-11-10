@@ -33,6 +33,8 @@ public class StaffEntity {
 
     @ManyToMany(mappedBy = "staffMembers",cascade = CascadeType.ALL)
     private List<FieldEntity> fields;
+    @ManyToMany(mappedBy = "staffLogs",cascade = CascadeType.ALL)
+    private List<LogEntity> logs;
 
     @OneToMany(mappedBy = "staff",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<VehicleEntity> vehicles;
