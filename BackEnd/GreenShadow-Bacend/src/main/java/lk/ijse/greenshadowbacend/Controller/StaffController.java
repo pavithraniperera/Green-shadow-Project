@@ -70,5 +70,11 @@ public class StaffController {
         return new ResponseEntity<>(staffDto, HttpStatus.OK);
     }
 
+    @GetMapping("/{staffId}/field")
+    public ResponseEntity<List<FieldDto>> getFieldsOfStaffId(@PathVariable("staffId") String staffId) {
+        List<FieldDto> fieldDtos = staffService.getFieldsOfStaffId(staffId);
+        return ResponseEntity.ok(fieldDtos);
+    }
+
 
 }

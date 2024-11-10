@@ -1,8 +1,10 @@
 package lk.ijse.greenshadowbacend.Service.impl;
 
 import lk.ijse.greenshadowbacend.Dao.StaffDao;
+import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
 import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Entity.CropEntity;
+import lk.ijse.greenshadowbacend.Entity.FieldEntity;
 import lk.ijse.greenshadowbacend.Entity.StaffEntity;
 import lk.ijse.greenshadowbacend.Service.StaffService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,5 +84,13 @@ public class StaffServiceImpl implements StaffService {
 
         return byEmail.map(staffMapper::toStaffDto);
 
+    }
+
+    @Override
+    public List<FieldDto> getFieldsOfStaffId(String staffId) {
+        StaffEntity staff = staffDao.findById(staffId)
+                .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + staffId));
+
+        return staffMapper.asFieldDtoList(new ArrayList<>(staff.getFields()));
     }
 }

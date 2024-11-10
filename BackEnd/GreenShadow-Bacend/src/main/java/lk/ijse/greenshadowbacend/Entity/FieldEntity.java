@@ -28,8 +28,8 @@ public class FieldEntity {
     @ManyToMany
     @JoinTable(
             name = "staff_fields_detail",
-            joinColumns = @JoinColumn(name = "staff_id"),
-            inverseJoinColumns = @JoinColumn(name = "field_id")
+            joinColumns = @JoinColumn(name = "field_id"),
+            inverseJoinColumns = @JoinColumn(name = "staff_id")
     )
     private Set<StaffEntity> staffMembers = new HashSet<>();
 
