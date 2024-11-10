@@ -2,6 +2,7 @@ package lk.ijse.greenshadowbacend.Service.impl;
 
 import lk.ijse.greenshadowbacend.Dao.StaffDao;
 import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
+import lk.ijse.greenshadowbacend.Entity.CropEntity;
 import lk.ijse.greenshadowbacend.Entity.StaffEntity;
 import lk.ijse.greenshadowbacend.Service.StaffService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
@@ -35,22 +36,43 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public StaffDto update(String id, StaffDto dto) {
-        return null;
+        StaffEntity existingStaff = staffDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + id));
+
+        // Update fields
+        existingStaff.setFirstName(dto.getFirstName());
+        existingStaff.setLastName(dto.getLastName());
+        existingStaff.setEmail(dto.getEmail());
+        existingStaff.setDob(dto.getDob());
+        existingStaff.setAddress(dto.getAddress());
+        existingStaff.setContact(dto.getContact());
+        existingStaff.setJoinDate(dto.getJoinDate());
+        existingStaff.setRole(dto.getRole());
+
+        // Save updated entity
+        StaffEntity updatedEntity = staffDao.save(existingStaff);
+
+        // Convert updated entity back to DTO
+        return staffMapper.toStaffDto(updatedEntity);
     }
 
     @Override
     public void delete(String id) {
-
+        staffDao.deleteById(id);
     }
 
     @Override
     public StaffDto findById(String id) {
+        Optional<StaffEntity> byId = staffDao.findById(id);
+        if (byId.isPresent()){
+            return staffMapper.toStaffDto(byId.get());
+        }
         return null;
     }
 
     @Override
     public List<StaffDto> findAll() {
-        return null;
+        return staffMapper.asStaffDtoList(staffDao.findAll());
     }
 
     @Override

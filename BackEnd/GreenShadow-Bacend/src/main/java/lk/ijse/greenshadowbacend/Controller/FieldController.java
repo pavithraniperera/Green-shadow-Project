@@ -3,7 +3,9 @@ package lk.ijse.greenshadowbacend.Controller;
 
 import ch.qos.logback.core.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lk.ijse.greenshadowbacend.Dao.StaffDao;
 import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
+import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Exception.FieldNotFoundException;
 import lk.ijse.greenshadowbacend.Service.FieldService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
@@ -23,6 +25,7 @@ import java.util.List;
 public class FieldController {
     @Autowired
     private FieldService fieldService;
+  ;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> saveField(
             @RequestParam("fieldData") String fieldData,
@@ -124,5 +127,12 @@ public class FieldController {
 
         return new ResponseEntity<>(fieldDto, HttpStatus.OK);
     }
+
+    @GetMapping("/{fieldId}/staff")
+    public ResponseEntity<List<StaffDto>> getStaffByFieldId(@PathVariable("fieldId") String fieldId) {
+        List<StaffDto> staffList = fieldService.getStaffIdsByFieldId(fieldId);
+        return ResponseEntity.ok(staffList);
+    }
+
 
 }

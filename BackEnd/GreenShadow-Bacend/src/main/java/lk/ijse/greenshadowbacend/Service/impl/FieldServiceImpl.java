@@ -1,8 +1,11 @@
 package lk.ijse.greenshadowbacend.Service.impl;
 
 import lk.ijse.greenshadowbacend.Dao.FieldDao;
+import lk.ijse.greenshadowbacend.Dao.StaffDao;
 import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
+import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Entity.FieldEntity;
+import lk.ijse.greenshadowbacend.Entity.StaffEntity;
 import lk.ijse.greenshadowbacend.Service.FieldService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
@@ -13,8 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -22,11 +24,24 @@ public class FieldServiceImpl implements FieldService {
     @Autowired
     private FieldDao fieldDao;
     @Autowired
+    private StaffDao staffDao;
+    @Autowired
     private Mapping fieldMapping;
     @Override
     public FieldDto save(FieldDto dto) {
         dto.setFieldId(AppUtil.generateFieldId());
-       return fieldMapping.toFieldDto(fieldDao.save(fieldMapping.toFieldEntity(dto)));
+        FieldEntity field = fieldMapping.toFieldEntity(dto);
+        // Associate staff with field
+        Set<StaffEntity> staffEntities = new HashSet<>();
+        if (dto.getStaffIds() != null) {
+            for (String staffId : dto.getStaffIds()) {
+                StaffEntity staff = staffDao.findById(staffId)
+                        .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + staffId));
+                staffEntities.add(staff);
+            }
+        }
+        field.setStaffMembers(staffEntities);
+       return fieldMapping.toFieldDto(fieldDao.save(field));
     }
 
     @Override
@@ -75,5 +90,12 @@ public class FieldServiceImpl implements FieldService {
     }
 
 
+    @Override
+    public List<StaffDto> getStaffIdsByFieldId(String fieldId) {
+        FieldEntity field = fieldDao.findById(fieldId)
+                .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + fieldId));
 
+        return fieldMapping.asStaffDtoList(new ArrayList<>(field.getStaffMembers()));
+
+    }
 }
