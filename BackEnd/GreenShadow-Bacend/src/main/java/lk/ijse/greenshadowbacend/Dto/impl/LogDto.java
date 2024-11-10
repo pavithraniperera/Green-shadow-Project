@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +18,7 @@ public class LogDto implements LogStatus {
 
     // IDs of associated entities for a lightweight representation
     private Set<String> staffIds;   // IDs of staff members monitoring this log
-    private Set<Long> fieldIds;     // IDs of fields related to this log
-    private Set<Long> cropIds;      // IDs of crops associated with this log
+    private Set<String> fieldIds;     // IDs of fields related to this log
+    private Set<String> cropIds;      // IDs of crops associated with this log
 
 }
