@@ -31,10 +31,10 @@ public class StaffEntity {
 
 
 
-    @ManyToMany(mappedBy = "staffMembers")
+    @ManyToMany(mappedBy = "staffMembers",cascade = CascadeType.ALL)
     private List<FieldEntity> fields;
 
-    @OneToMany(mappedBy = "staff")
+    @OneToMany(mappedBy = "staff",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<VehicleEntity> vehicles;
 
 

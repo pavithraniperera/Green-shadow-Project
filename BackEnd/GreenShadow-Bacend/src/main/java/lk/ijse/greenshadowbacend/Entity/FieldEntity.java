@@ -25,7 +25,7 @@ public class FieldEntity {
     private String image1;
     @Column(columnDefinition = "LONGTEXT")
     private String image2;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
             name = "staff_fields_detail",
             joinColumns = @JoinColumn(name = "staff_id"),
