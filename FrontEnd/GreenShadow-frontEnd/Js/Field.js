@@ -24,7 +24,7 @@ document.querySelectorAll('.slider').forEach((slider, sliderIndex) => {
         showImage(currentImageIndex);
     });
 });
-function toggleEditMode() {
+function toggleFieldEditMode() {
     $('#fieldDetailModal').modal('hide');
 
     // Open the addStaffModal
