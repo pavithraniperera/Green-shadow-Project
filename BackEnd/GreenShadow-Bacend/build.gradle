@@ -32,6 +32,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.1'
+    implementation 'org.locationtech.jts:jts-core:1.18.1'  // Use the latest version
 }
 
 tasks.named('test') {
