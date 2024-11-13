@@ -8,10 +8,12 @@ import lk.ijse.greenshadowbacend.Secure.JWTAuthResponse;
 import lk.ijse.greenshadowbacend.Secure.SignIn;
 import lk.ijse.greenshadowbacend.Service.AuthService;
 import lk.ijse.greenshadowbacend.Service.JwtService;
+import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final Mapping mapping;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public JWTAuthResponse signIn(SignIn signIn) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signIn.getEmail(),signIn.getPassword()));
@@ -34,6 +37,8 @@ public class AuthServiceImpl implements AuthService {
     //save user in db and issue a token
     @Override
     public JWTAuthResponse signUp(UserDto userDTO) {
+        userDTO.setId(AppUtil.generateUserId());
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         //save user
         UserEntity savedUser = userDao.save(mapping.toUserEntity(userDTO));
         //generate token

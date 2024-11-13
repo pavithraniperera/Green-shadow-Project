@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,19 +20,23 @@ import java.util.List;
 public class StaffController {
     @Autowired
     private StaffService staffService;
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public ResponseEntity<StaffDto> saveStaff(@RequestBody StaffDto staffDto) {
         StaffDto savedStaff = staffService.save(staffDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStaff);
     }
 
     @PutMapping(value = "/{staffId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public ResponseEntity<StaffDto> updateStaff(@PathVariable("staffId") String staffId, @RequestBody StaffDto staffDto) {
         StaffDto updatedStaff = staffService.update(staffId, staffDto);
         return ResponseEntity.ok(updatedStaff);
     }
 
     @DeleteMapping("/{staffId}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public ResponseEntity<String> deleteStaff(@PathVariable("staffId") String staffId) {
         try{
             if (!RegexUtilForId.isValidStaffId(staffId)){
