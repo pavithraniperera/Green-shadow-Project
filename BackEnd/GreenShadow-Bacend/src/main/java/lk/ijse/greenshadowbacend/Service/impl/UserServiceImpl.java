@@ -5,10 +5,13 @@ import lk.ijse.greenshadowbacend.Dto.UserStatus;
 import lk.ijse.greenshadowbacend.Dto.impl.UserDto;
 import lk.ijse.greenshadowbacend.Entity.StaffEntity;
 import lk.ijse.greenshadowbacend.Entity.UserEntity;
+import lk.ijse.greenshadowbacend.Exception.UserNotFoundException;
 import lk.ijse.greenshadowbacend.Service.UserService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +57,12 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> byEmail = userDao.findByEmail(email);
 
         return byEmail.map(userMapping::toUserDto);
+    }
+
+    @Override
+    public UserDetailsService userDetailService() {
+        return userName ->
+                userDao.findByEmail(userName)
+                        .orElseThrow(()->new UserNotFoundException("User Not Found"));
     }
 }
