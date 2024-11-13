@@ -13,15 +13,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Configuration
 @RequiredArgsConstructor
-public class JwtConfigFilter {
+public class JwtConfigFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
 
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String initToken = request.getHeader("Authorization");
         String userEmail;
