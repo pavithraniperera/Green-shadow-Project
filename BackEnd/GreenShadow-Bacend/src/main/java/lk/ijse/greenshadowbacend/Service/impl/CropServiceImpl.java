@@ -26,7 +26,7 @@ public class CropServiceImpl implements CropService {
     @Autowired
     private Mapping cropMapping;
     @Override
-    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public CropDto save(CropDto dto) {
         dto.setId(AppUtil.generateCropId());
 
