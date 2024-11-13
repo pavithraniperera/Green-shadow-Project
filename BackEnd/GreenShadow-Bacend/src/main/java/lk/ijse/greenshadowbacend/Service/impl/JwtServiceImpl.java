@@ -56,7 +56,8 @@ public class JwtServiceImpl implements JwtService {
     private String generateToken(Map<String,Object> extractClaims, UserDetails userDetails){
         extractClaims.put("role",userDetails.getAuthorities());
         Date now = new Date();
-        Date expire = new Date(now.getTime() + 1000 * 600);
+        Date expire = new Date(now.getTime() + 1000 * 60 * 60 * 24); // Token expires in 24 hours
+
 
         return Jwts.builder().setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
@@ -74,9 +75,8 @@ public class JwtServiceImpl implements JwtService {
     private String refreshToken(Map<String,Object> extractClaims,UserDetails userDetails){
         extractClaims.put("role",userDetails.getAuthorities());
         Date now = new Date();
-        Date expire = new Date(now.getTime() + 1000 * 600);
-        Date refreshExpire = new Date(now.getTime() + 1000 * 600 * 600);
-
+        Date expire = new Date(now.getTime() + 1000 * 60 * 60 * 24); // New access token expires in 24 hours
+        Date refreshExpire = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7); // Refresh token expires in 7 days
         return Jwts.builder().setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
                 .setExpiration(refreshExpire)
