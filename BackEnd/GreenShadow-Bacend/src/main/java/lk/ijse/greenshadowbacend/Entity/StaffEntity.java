@@ -18,6 +18,8 @@ public class StaffEntity {
     private String staffId;
     private String firstName;
     private String lastName;
+    private String gender;
+    private String designation;
     @Column(unique = true)
     private String email;
     private Date dob;
