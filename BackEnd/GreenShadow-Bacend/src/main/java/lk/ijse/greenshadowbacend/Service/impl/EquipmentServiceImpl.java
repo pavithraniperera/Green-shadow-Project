@@ -11,6 +11,7 @@ import lk.ijse.greenshadowbacend.Service.EquipmentService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Autowired
     private Mapping equipmentMapper;
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR')")
     public EquipmentDto save(EquipmentDto dto) {
         dto.setEquipmentId(AppUtil.generateEquipmentId());
         EquipmentEntity equipment = equipmentMapper.toEquipmentEntity(dto);
@@ -36,6 +38,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR')")
     public EquipmentDto update(String id, EquipmentDto dto) {
         EquipmentEntity equipment = equipmentDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Equipment not found with ID: " + id));
@@ -60,11 +63,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR')")
     public void delete(String id) {
       equipmentDao.deleteById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public EquipmentDto findById(String id) {
         EquipmentEntity equipment = equipmentDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Equipment not found with ID: " + id));
@@ -72,6 +77,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<EquipmentDto> findAll() {
         return equipmentMapper.asEquipmentDtoList(equipmentDao.findAll());
     }

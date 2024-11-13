@@ -11,6 +11,7 @@ import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private Mapping staffMapper;
     @Override
+
     public StaffDto save(StaffDto dto) {
        dto.setStaffId(AppUtil.generateStaffId());
         StaffEntity save = staffDao.save(staffMapper.toStaffEntity(dto));
@@ -38,6 +40,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+
     public StaffDto update(String id, StaffDto dto) {
         StaffEntity existingStaff = staffDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + id));
@@ -60,11 +63,13 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+
     public void delete(String id) {
         staffDao.deleteById(id);
     }
 
     @Override
+
     public StaffDto findById(String id) {
         Optional<StaffEntity> byId = staffDao.findById(id);
         if (byId.isPresent()){
@@ -74,6 +79,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+
     public List<StaffDto> findAll() {
         return staffMapper.asStaffDtoList(staffDao.findAll());
     }
@@ -87,6 +93,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+
     public List<FieldDto> getFieldsOfStaffId(String staffId) {
         StaffEntity staff = staffDao.findById(staffId)
                 .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + staffId));

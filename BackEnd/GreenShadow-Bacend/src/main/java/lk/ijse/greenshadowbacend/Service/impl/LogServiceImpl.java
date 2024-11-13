@@ -13,6 +13,7 @@ import lk.ijse.greenshadowbacend.Service.LogService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private Mapping logMapping;
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public LogDto save(LogDto dto) {
         dto.setLogId(AppUtil.generateLogId());
         LogEntity logEntity = logMapping.toLogEntity(dto);
@@ -69,6 +71,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public LogDto update(String id, LogDto dto) {
         LogEntity existingLog = logDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Log not found with ID: " + id));
@@ -114,11 +117,13 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public void delete(String id) {
         logDao.deleteById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public LogDto findById(String id) {
         Optional<LogEntity> byId = logDao.findById(id);
         if (byId.isPresent()){
@@ -128,6 +133,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<LogDto> findAll() {
         return  logMapping.asLogDtoList(logDao.findAll());
     }

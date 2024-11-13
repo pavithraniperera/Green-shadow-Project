@@ -9,6 +9,7 @@ import lk.ijse.greenshadowbacend.Service.CropService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class CropServiceImpl implements CropService {
     @Autowired
     private Mapping cropMapping;
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public CropDto save(CropDto dto) {
         dto.setId(AppUtil.generateCropId());
 
@@ -32,6 +34,7 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public CropDto update(String id, CropDto dto) {
         CropEntity existingCrop = cropDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Crop not found with ID: " + id));
@@ -59,12 +62,14 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public void delete(String id) {
         cropDao.deleteById(id);
 
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public CropDto findById(String id) {
         Optional<CropEntity> byId = cropDao.findById(id);
         if (byId.isPresent()){
@@ -74,6 +79,7 @@ public class CropServiceImpl implements CropService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<CropDto> findAll() {
         return cropMapping.asCropDtoList(cropDao.findAll());
     }

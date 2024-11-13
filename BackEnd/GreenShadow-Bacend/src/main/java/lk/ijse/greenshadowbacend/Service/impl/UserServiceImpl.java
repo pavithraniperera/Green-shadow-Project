@@ -10,6 +10,7 @@ import lk.ijse.greenshadowbacend.Service.UserService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,26 +36,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public UserDto update(String id, UserDto dto) {
         return userMapping.toUserDto(userDao.save(userMapping.toUserEntity(dto)));
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public void delete(String id) {
          userDao.deleteById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public UserDto findById(String id) {
         return null;
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<UserDto> findAll() {
         return userMapping.asUserDtoList(userDao.findAll());
     }
 
     @Override
+
     public Optional<UserDto> findByEmail(String email) {
         Optional<UserEntity> byEmail = userDao.findByEmail(email);
 

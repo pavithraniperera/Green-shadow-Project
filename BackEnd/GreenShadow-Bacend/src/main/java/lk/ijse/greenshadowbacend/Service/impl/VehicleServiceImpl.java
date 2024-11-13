@@ -9,6 +9,7 @@ import lk.ijse.greenshadowbacend.Service.VehicleService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Autowired
     private Mapping vehicleMapper;
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR')")
     public VehicleDto save(VehicleDto dto) {
         dto.setVehicleId(AppUtil.generateVehicleId());
         VehicleEntity vehicle = vehicleMapper.toVehicleEntity(dto);
@@ -39,6 +41,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR')")
     public VehicleDto update(String id, VehicleDto dto) {
         VehicleEntity existingVehicle = vehicleDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vehicle not found with ID: " + id));
@@ -63,11 +66,13 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR')")
     public void delete(String id) {
       vehicleDao.deleteById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public VehicleDto findById(String id) {
         VehicleEntity vehicle = vehicleDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vehicle not found with ID: " + id));
@@ -75,10 +80,13 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<VehicleDto> findAll() {
         return vehicleMapper.asVehicleDtoList(vehicleDao.findAll());
     }
     // Get Vehicles by Staff ID
+    @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<VehicleDto> getVehiclesByStaffId(String staffId) {
         StaffEntity staff = staffDao.findById(staffId)
                 .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + staffId));

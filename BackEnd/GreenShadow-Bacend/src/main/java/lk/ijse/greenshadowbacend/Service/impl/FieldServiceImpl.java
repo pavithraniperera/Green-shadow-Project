@@ -12,6 +12,8 @@ import lk.ijse.greenshadowbacend.Util.Mapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.geo.Point;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,24 +30,31 @@ public class FieldServiceImpl implements FieldService {
     @Autowired
     private Mapping fieldMapping;
     @Override
+    @PreAuthorize("hasRole('MANAGER')  or hasRole('SCIENTIST')")
     public FieldDto save(FieldDto dto) {
         dto.setFieldId(AppUtil.generateFieldId());
         FieldEntity field = fieldMapping.toFieldEntity(dto);
-        // Associate staff with field
-        Set<StaffEntity> staffEntities = new HashSet<>();
-        if (dto.getStaffIds() != null) {
-            for (String staffId : dto.getStaffIds()) {
-                StaffEntity staff = staffDao.findById(staffId)
-                        .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + staffId));
-                staffEntities.add(staff);
+        try {
+            Set<StaffEntity> staffEntities = new HashSet<>();
+            if (dto.getStaffIds() != null) {
+                for (String staffId : dto.getStaffIds()) {
+                    StaffEntity staff = staffDao.findById(staffId)
+                            .orElseThrow(() -> new IllegalArgumentException("Staff not found with ID: " + staffId));
+                    staffEntities.add(staff);
+                }
             }
+            field.setStaffMembers(staffEntities);
+            return fieldMapping.toFieldDto(fieldDao.save(field));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        field.setStaffMembers(staffEntities);
-       return fieldMapping.toFieldDto(fieldDao.save(field));
+        // Associate staff with field
+
     }
 
     @Override
-    public FieldDto update(String id, FieldDto dto) {
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
+    public FieldDto update(String id, FieldDto dto)  {
         FieldEntity existingField = fieldDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + id));
 
@@ -79,12 +88,14 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public void delete(String id) {
         fieldDao.deleteById(id);
 
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public FieldDto findById(String id) {
         Optional<FieldEntity> byId = fieldDao.findById(id);
         if (byId.isPresent()){
@@ -94,12 +105,14 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<FieldDto> findAll() {
         return fieldMapping.asFieldDtoList(fieldDao.findAll());
     }
 
 
     @Override
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<StaffDto> getStaffIdsByFieldId(String fieldId) {
         FieldEntity field = fieldDao.findById(fieldId)
                 .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + fieldId));
