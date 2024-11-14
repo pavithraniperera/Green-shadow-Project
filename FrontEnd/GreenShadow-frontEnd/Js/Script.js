@@ -99,22 +99,17 @@ $(document).ready(function() { // This function runs when the document is ready
         $("#signUp-section").css(css1);
     });
 
-    $("#login-signIn").click(function () {
-        $("#login-section").css(css1);
-        $("#signUp-section").css(css1);
-        $("#homeSection").css(css2)
-        handleNavClick("nav-dashboard");
-        $("body").css({
-            backgroundColor:"#FAF5E6"
-        })
-    });
+   /* $("#login-signIn").click(function () {
+
+    });*/
 
     // Sign-Up
 
     $('#signUpBtn').click(function () {
-        const email = $('.userName').val();
-        const password = $('.password').val();
+        const email = $('#signUp-email').val();
+        const password = $('#signUp-password').val();
         const role = $('#SelectRole').val();
+        console.log(email,password,role)
 
         $.ajax({
             url: 'http://localhost:8080/greenShadow/api/v1/auth/signup',
@@ -124,12 +119,44 @@ $(document).ready(function() { // This function runs when the document is ready
             success: function (response) {
                 // Store the token from the response
                 localStorage.setItem('token', response.token);
-                alert("Sign-up successful!");
+                showAlert("Sign-up successful!","success");
                 $("#login-section").css(css2);
                 $("#signUp-section").css(css1);
             },
             error: function () {
-                alert("Sign-up failed. Please try again.");
+                showAlert("Sign-up failed. Please try again.","error");
+            }
+        });
+    });
+
+
+// Sign-In
+    $('#login-signIn').click(function () {
+        const email = $('#login-email').val();
+        const password = $('#login-password').val();
+
+        $.ajax({
+            url: 'http://localhost:8080/greenShadow/api/v1/auth/signIn',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email, password }),
+            success: function (response) {
+                // Store the token from the response
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('email',email)
+                showAlert("Sign-in successful!",'success');
+                $("#login-section").css(css1);
+                $("#signUp-section").css(css1);
+                $("#homeSection").css(css2)
+                handleNavClick("nav-dashboard");
+                $("body").css({
+                    backgroundColor:"#FAF5E6"
+                })
+
+
+            },
+            error: function () {
+                showAlert("Sign-in failed. Please try again.",'error');
             }
         });
     });
