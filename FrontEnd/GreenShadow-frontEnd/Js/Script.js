@@ -109,4 +109,29 @@ $(document).ready(function() { // This function runs when the document is ready
         })
     });
 
+    // Sign-Up
+
+    $('#signUpBtn').click(function () {
+        const email = $('.userName').val();
+        const password = $('.password').val();
+        const role = $('#SelectRole').val();
+
+        $.ajax({
+            url: 'http://localhost:8080/greenShadow/api/v1/auth/signup',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email, password, role }),
+            success: function (response) {
+                // Store the token from the response
+                localStorage.setItem('token', response.token);
+                alert("Sign-up successful!");
+                $("#login-section").css(css2);
+                $("#signUp-section").css(css1);
+            },
+            error: function () {
+                alert("Sign-up failed. Please try again.");
+            }
+        });
+    });
+
 });
