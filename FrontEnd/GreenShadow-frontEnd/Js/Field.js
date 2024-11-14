@@ -118,3 +118,51 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+$("#addField").click(function () {
+
+    const fieldName = $("#Name").val();
+    const fieldLocation = $("#location").val();
+    const fieldSize = $("#Size").val();
+    const fieldImage1 = $("#fieldImage1")[0].files[0];
+    const fieldImage2 = $("#fieldImage2")[0].files[0];
+
+    // Create a JavaScript object representing field data
+    const fieldData = {
+        name: fieldName,
+        location: fieldLocation,
+        size: fieldSize,
+    };
+
+    // Create FormData and append data and images
+    const formData = new FormData();
+    formData.append("fieldData", JSON.stringify(fieldData));
+    if (fieldImage1) formData.append("image1", fieldImage1);
+    if (fieldImage2) formData.append("image2", fieldImage2);
+
+    // Get JWT token from localStorage
+    const token = localStorage.getItem("token");
+    console.log(token)
+
+    // Perform the AJAX request
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/fields", // Replace with your actual backend API URL
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            Authorization: "Bearer " + token // Include JWT in Authorization header
+        },
+        success: function (response) {
+            console.log(response)
+            showAlert("Field created successfully", 'success');
+            // Optionally, redirect or show a success message
+        },
+        error: function (xhr, status, error) {
+            console.log(status,error)
+           showAlert("Failed to create field:", 'error');
+            // Handle error display
+        }
+    });
+});
