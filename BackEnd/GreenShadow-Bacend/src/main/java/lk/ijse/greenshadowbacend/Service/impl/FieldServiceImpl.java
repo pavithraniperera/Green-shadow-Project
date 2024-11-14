@@ -30,7 +30,7 @@ public class FieldServiceImpl implements FieldService {
     @Autowired
     private Mapping fieldMapping;
     @Override
-    @PreAuthorize("hasRole('MANAGER')  or hasRole('SCIENTIST')")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public FieldDto save(FieldDto dto) {
         dto.setFieldId(AppUtil.generateFieldId());
         FieldEntity field = fieldMapping.toFieldEntity(dto);
@@ -48,12 +48,12 @@ public class FieldServiceImpl implements FieldService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        // Associate staff with field
+
 
     }
 
     @Override
-    @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
+   @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public FieldDto update(String id, FieldDto dto)  {
         FieldEntity existingField = fieldDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + id));
@@ -95,7 +95,7 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
+   // @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public FieldDto findById(String id) {
         Optional<FieldEntity> byId = fieldDao.findById(id);
         if (byId.isPresent()){
@@ -112,7 +112,7 @@ public class FieldServiceImpl implements FieldService {
 
 
     @Override
-    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
+    //@PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<StaffDto> getStaffIdsByFieldId(String fieldId) {
         FieldEntity field = fieldDao.findById(fieldId)
                 .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + fieldId));
