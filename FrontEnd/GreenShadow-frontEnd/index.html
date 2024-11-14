@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="assets/Styles/Vehicle.css">
     <link rel="stylesheet" href="assets/Styles/Profile.css">
     <link rel="stylesheet" href="assets/Styles/styles.css">
+    <link rel="stylesheet" href="assets/Styles/Alert.css">
 
 
     <title>Green shadow</title>
@@ -66,11 +67,11 @@
 
                         <div class="form-group position-relative form-group-custom">
                             <span class="input-icon"><i class="fas fa-envelope"></i></span>
-                            <input type="email" class="form-control userName" placeholder="Email" required>
+                            <input id="signUp-email" type="email" class="form-control userName" placeholder="Email" required>
                         </div>
                         <div class="form-group position-relative form-group-custom">
                             <span class="input-icon"><i class="fas fa-lock"></i></span>
-                            <input type="password" class="form-control password " placeholder="Password" required>
+                            <input id="signUp-password" type="password" class="form-control password " placeholder="Password" required>
                         </div>
                         <div class="form-group form-group-custom ">
                             <label><span class="input-icon"><i class="fas fa-briefcase"></i></span></label>
@@ -1913,6 +1914,13 @@
 
 </section>
 
+<!--alert-->
+<div id="alertBox" class="alert-box hidden">
+    <span id="alertMessage">Your alert message here</span>
+    <button onclick="closeAlert()" class="close-btn">&times;</button>
+</div>
+
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -1928,6 +1936,7 @@
 <script src="Js/Equipment.js"></script>
 <script src="Js/Profile.js"></script>
 <script src="Js/Script.js"></script>
+<script src="Js/Alert.js"></script>
 
 
 </body>
