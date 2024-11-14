@@ -22,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/fields")
+@CrossOrigin
 public class FieldController {
     @Autowired
     private FieldService fieldService;

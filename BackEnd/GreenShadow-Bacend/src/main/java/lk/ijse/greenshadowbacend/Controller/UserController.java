@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("api/v1/users")
+@CrossOrigin
 public class UserController {
     @Autowired
     private UserService userService;

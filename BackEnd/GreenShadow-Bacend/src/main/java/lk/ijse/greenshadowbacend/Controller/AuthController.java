@@ -21,6 +21,7 @@ import java.util.Optional;
 @RequestMapping("api/v1/auth")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class AuthController {
     private final StaffService staffService;
     private final UserService userService;
