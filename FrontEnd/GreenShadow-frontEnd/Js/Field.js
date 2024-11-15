@@ -305,6 +305,7 @@ function changeModalData(){
     document.getElementById("FieldSaveBtn").style.display = "none";
     initMap()
 }
+//fetch all fields
 function fetchFields() {
     $.ajax({
         url: 'http://localhost:8080/greenShadow/api/v1/fields',
@@ -321,6 +322,7 @@ function fetchFields() {
         }
     });
 }
+//Display that field in ui
 function populateFields(fields) {
     const container = $('#field-container');
     container.empty(); // Clear existing content
@@ -405,7 +407,7 @@ function populateFields(fields) {
     });
 }
 
-
+//clear form
 function clearFieldForm(){
     // Clear the form fields
     $("#addFieldModal").find("input, textarea, select").val("");
@@ -471,6 +473,7 @@ function openFieldModal( button) {
         toggleFieldEditMode();
     })
 
+//get staff related to field
 function populateStaffDropdown(staff) {
     // Find the staff dropdown
     const staffDropdown = $('#field-staff');
@@ -488,6 +491,7 @@ function populateStaffDropdown(staff) {
     }
 }
 
+//delete action
 $("#FieldDeleteBtn").click(function () {
     const fieldId = $("#fieldCode").val(); // Assuming a hidden input or other source for field ID.
 
