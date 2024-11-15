@@ -53,8 +53,10 @@ function populateUpdateFieldModal(fieldData) {
     document.getElementById('addFieldModalLabel').innerText = 'Update Field';
 
     // Change the button text from "Add Staff" to "Save Changes"
-    const addFieldBtn = document.getElementById('addField');
-    addFieldBtn.innerText = 'Save Changes';
+    // Hide the "Add Field" button
+    document.getElementById("addField").style.display = "none";
+    // Show the "Save Changes" button
+    document.getElementById("FieldSaveBtn").style.display = "inline-block";
 
 }
 // Function to parse the location string and set the map
@@ -77,12 +79,57 @@ function setFieldLocation(locationString) {
     initLeafletMap(latitude, longitude);
 }
 
-function saveChanges() {
-    // Logic for saving changes (e.g., sending updated data to the server)
-    console.log("Saving changes...");
+$("#addField").click(function () {
 
+    const fieldName = $("#Name").val();
+    const fieldLocation = $("#location").val();
+    const fieldSize = $("#Size").val();
+    const fieldImage1 = $("#fieldImage1")[0].files[0];
+    const fieldImage2 = $("#fieldImage2")[0].files[0];
 
-}
+    // Create a JavaScript object representing field data
+    const fieldData = {
+        name: fieldName,
+        location: fieldLocation,
+        size: fieldSize,
+    };
+
+    // Create FormData and append data and images
+    const formData = new FormData();
+    formData.append("fieldData", JSON.stringify(fieldData));
+    if (fieldImage1) formData.append("image1", fieldImage1);
+    if (fieldImage2) formData.append("image2", fieldImage2);
+
+    // Get JWT token from localStorage
+    const token = localStorage.getItem("token");
+    console.log(token)
+
+    // Perform the AJAX request
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/fields",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            Authorization: "Bearer " + token // Include JWT in Authorization header
+        },
+        success: function (response) {
+            console.log(response)
+            // Clear the input fields in the modal
+            clearFieldForm();
+            // Hide the modal
+            $("#addFieldModal").modal('hide');
+            showAlert("Field created successfully", 'success');
+
+        },
+        error: function (xhr, status, error) {
+            console.log(status,error)
+            showAlert("Failed to create field:", 'error');
+
+        }
+    });
+});
 // JavaScript to handle image preview
 function previewImage(event, previewId) {
     const reader = new FileReader();
@@ -191,40 +238,38 @@ function initLeafletMap(lat, lng) {
 }
 
 //added field
-$("#addField").click(function () {
+$("#FieldSaveBtn").click(function () {
 
-    const fieldName = $("#Name").val();
-    const fieldLocation = $("#location").val();
-    const fieldSize = $("#Size").val();
-    const fieldImage1 = $("#fieldImage1")[0].files[0];
-    const fieldImage2 = $("#fieldImage2")[0].files[0];
+    const id =  $("#fieldCode").val();
+    const fieldUpdateName = $("#Name").val();
+    const fieldUpdateLocation = $("#location").val();
+    const fieldUpdateSize = $("#Size").val();
+    const fieldUpdateImage1 = $("#fieldImage1")[0].files[0];
+    const fieldUpdateImage2 = $("#fieldImage2")[0].files[0];
 
     // Create a JavaScript object representing field data
     const fieldData = {
-        name: fieldName,
-        location: fieldLocation,
-        size: fieldSize,
+        name: fieldUpdateName,
+        location: fieldUpdateLocation,
+        size: fieldUpdateSize,
     };
 
     // Create FormData and append data and images
     const formData = new FormData();
     formData.append("fieldData", JSON.stringify(fieldData));
-    if (fieldImage1) formData.append("image1", fieldImage1);
-    if (fieldImage2) formData.append("image2", fieldImage2);
+    if (fieldUpdateImage1) formData.append("image1", fieldUpdateImage1);
+    if (fieldUpdateImage2) formData.append("image2", fieldUpdateImage2);
 
-    // Get JWT token from localStorage
-    const token = localStorage.getItem("token");
-    console.log(token)
 
     // Perform the AJAX request
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/fields",
-        type: "POST",
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${id}`,
+        type: "PUT",
         data: formData,
         processData: false,
         contentType: false,
         headers: {
-            Authorization: "Bearer " + token // Include JWT in Authorization header
+            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
         },
         success: function (response) {
             console.log(response)
@@ -232,61 +277,60 @@ $("#addField").click(function () {
             clearFieldForm();
             // Hide the modal
             $("#addFieldModal").modal('hide');
-            showAlert("Field created successfully", 'success');
+            fetchFields();
+            changeModalData();
+            showAlert("Field Updated successfully", 'success');
 
         },
         error: function (xhr, status, error) {
             console.log(status,error)
-           showAlert("Failed to create field:", 'error');
+           showAlert("Failed to Update field:", 'error');
 
         }
     });
 });
+function changeModalData(){
+    // Change the modal header to "Update Member"
+    document.getElementById('addFieldModalLabel').innerText = 'Add Field';
 
-function clearFieldForm(){
-    // Clear the form fields
-    $("#addFieldModal").find("input, textarea, select").val("");
-
-    // If you're previewing images in <img> tags, clear the preview as well
-    $("#preview1").attr("src", ""); // Clear first image preview
-    $("#preview2").attr("src", ""); // Clear second image preview
+    // Change the button text from "Add Staff" to "Save Changes"
+    // Hide the "Add Field" button
+    document.getElementById("addField").style.display = "inline-block";
+    // Show the "Save Changes" button
+    document.getElementById("FieldSaveBtn").style.display = "none";
 }
-$(document).ready(function () {
-    fetchFields();
+function fetchFields() {
+    $.ajax({
+        url: 'http://localhost:8080/greenShadow/api/v1/fields',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function (fields) {
+            populateFields(fields);
+        },
+        error: function (error) {
+            console.error("Error fetching fields:", error);
+            $(".no-data").show();
+        }
+    });
+}
+function populateFields(fields) {
+    const container = $('#field-container');
+    container.empty(); // Clear existing content
 
-    function fetchFields() {
-        $.ajax({
-            url: 'http://localhost:8080/greenShadow/api/v1/fields',
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            success: function (fields) {
-                populateFields(fields);
-            },
-            error: function (error) {
-                console.error("Error fetching fields:", error);
-                $(".no-data").show();
-            }
-        });
+    if (fields.length === 0) {
+        $(".no-data").show();
+        return;
     }
 
-    function populateFields(fields) {
-        const container = $('#field-container');
-        container.empty(); // Clear existing content
+    $(".no-data").hide();
 
-        if (fields.length === 0) {
-            $(".no-data").show();
-            return;
-        }
-
-        $(".no-data").hide();
-
-        fields.forEach(field => {
-            // Use the Base64 string as the source for each image
-            const image1Src = field.image1 ? `data:image/jpeg;base64,${field.image1}` : 'https://via.placeholder.com/600x200?text=Field+Image+1';
-            const image2Src = field.image2 ? `data:image/jpeg;base64,${field.image2}` : 'https://via.placeholder.com/600x200?text=Field+Image+2';
-            const card = `
+    fields.forEach(field => {
+        // Use the Base64 string as the source for each image
+        const image1Src = field.image1 ? `data:image/jpeg;base64,${field.image1}` : 'https://via.placeholder.com/600x200?text=Field+Image+1';
+        const image2Src = field.image2 ? `data:image/jpeg;base64,${field.image2}` : 'https://via.placeholder.com/600x200?text=Field+Image+2';
+        const card = `
                 <div class="card-custom "
                 data-code="${field.fieldId}"
                 data-name="${field.name}"
@@ -323,38 +367,49 @@ $(document).ready(function () {
                     </div>
                 </div>
             `;
-            container.append(card);
-          console.log(field.fieldId)
+        container.append(card);
+        console.log(field.fieldId)
+    });
+
+    // initializeSliders();
+    document.querySelectorAll('.slider').forEach((slider, sliderIndex) => {
+        const images = slider.querySelectorAll('img');
+        let currentImageIndex = 0;
+
+        function showImage(index) {
+            images.forEach((img, i) => {
+                img.classList.remove('active');
+                if (i === index) {
+                    img.classList.add('active');
+                }
+            });
+        }
+
+        // Event listener for next button
+        slider.querySelector('.next-button').addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            showImage(currentImageIndex);
         });
 
-       // initializeSliders();
-        document.querySelectorAll('.slider').forEach((slider, sliderIndex) => {
-            const images = slider.querySelectorAll('img');
-            let currentImageIndex = 0;
-
-            function showImage(index) {
-                images.forEach((img, i) => {
-                    img.classList.remove('active');
-                    if (i === index) {
-                        img.classList.add('active');
-                    }
-                });
-            }
-
-            // Event listener for next button
-            slider.querySelector('.next-button').addEventListener('click', () => {
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                showImage(currentImageIndex);
-            });
-
-            // Event listener for previous button
-            slider.querySelector('.prev-button').addEventListener('click', () => {
-                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-                showImage(currentImageIndex);
-            });
+        // Event listener for previous button
+        slider.querySelector('.prev-button').addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            showImage(currentImageIndex);
         });
-    }
+    });
+}
 
+
+function clearFieldForm(){
+    // Clear the form fields
+    $("#addFieldModal").find("input, textarea, select").val("");
+
+    // If you're previewing images in <img> tags, clear the preview as well
+    $("#preview1").attr("src", ""); // Clear first image preview
+    $("#preview2").attr("src", ""); // Clear second image preview
+}
+$(document).ready(function () {
+    fetchFields();
 
 });
 var fieldId =null;
