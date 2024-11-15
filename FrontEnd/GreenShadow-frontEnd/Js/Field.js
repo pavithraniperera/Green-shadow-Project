@@ -195,11 +195,6 @@ function initMap(){
         map.invalidateSize(); // Refresh map to fit the container
     });
 }
-/*document.addEventListener('DOMContentLoaded', function() {
-
-
-
-});*/
 
 // Function to format latitude and longitude
 function formatCoordinates(lat, lng) {
