@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public class FieldDto implements FieldStatus {
     private String image1;
     private String image2;
     private Set<String> staffIds; // Many-to-many relationship with Staff
-    //private Set<CropDto> crops; // One-to-many relationship with Crop
+    //private List<String> cropsId; // One-to-many relationship with Crop
 
 
 }
