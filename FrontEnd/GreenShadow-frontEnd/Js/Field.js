@@ -1,6 +1,49 @@
 // JavaScript for Image Slider
 
+
 function toggleFieldEditMode() {
+
+    updateFieldData(fieldId);
+}
+function updateFieldData(fieldId){
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`, // Adjust URL as necessary
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function(response) {
+            // Call function to populate the modal with the field data
+            console.log(response)
+             populateUpdateFieldModal(response);
+        },
+        error: function() {
+            alert('Error retrieving field data.');
+        }
+    });
+}
+//field update modal data
+function populateUpdateFieldModal(fieldData) {
+    // Set the field data into the modal inputs
+    $('#Code').val(fieldData.fieldId);
+    $('#Name').val(fieldData.name);
+    $('#Size').val(fieldData.size);
+
+    setFieldLocation(fieldData.location);
+
+    // Set the images if they are available
+    if (fieldData.image1) {
+        $('#preview1').attr('src', `data:image/jpeg;base64,${fieldData.image1}`).show(); // Add data:image/jpeg;base64, prefix if it's an image/jpeg
+    } else {
+        $('#preview1').hide();
+    }
+    if (fieldData.image2) {
+        $('#preview2').attr('src', `data:image/jpeg;base64,${fieldData.image2}`).show(); // Same for image2
+    } else {
+        $('#preview2').hide();
+    }
+
+    // Show the modal
     $('#fieldDetailModal').modal('hide');
 
     // Open the addStaffModal
@@ -12,6 +55,26 @@ function toggleFieldEditMode() {
     // Change the button text from "Add Staff" to "Save Changes"
     const addFieldBtn = document.getElementById('addField');
     addFieldBtn.innerText = 'Save Changes';
+
+}
+// Function to parse the location string and set the map
+function setFieldLocation(locationString) {
+    // Example: "6.7241° N, 79.9164° E"
+    const locationParts = locationString.split(',');
+
+    // Extract the latitude and longitude values
+    const latPart = locationParts[0].trim(); // "6.7241° N"
+    const lngPart = locationParts[1].trim(); // "79.9164° E"
+
+    // Remove the degree symbol and directions (N, S, E, W) and convert to float
+    const latitude = parseFloat(latPart.split('°')[0]);
+    const longitude = parseFloat(lngPart.split('°')[0]);
+
+    // Set the location input field (to show the location in the input)
+    $('#location').val(`${latitude}° N, ${longitude}° E`);
+
+    // Initialize the map with parsed latitude and longitude
+    initLeafletMap(latitude, longitude);
 }
 
 function saveChanges() {
@@ -30,7 +93,9 @@ function previewImage(event, previewId) {
     };
     reader.readAsDataURL(event.target.files[0]);
 }
+let map =null
 
+//initialize the map
 document.addEventListener('DOMContentLoaded', function() {
     // Center coordinates for Panadura, Sri Lanka
     var panaduraCoordinates = [6.7114, 79.9072];
@@ -42,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // Initialize map centered on Panadura with zoom level suitable for the area
-    var map = L.map('map', {
+     map = L.map('map', {
         center: panaduraCoordinates,
         zoom: 13,
         maxBounds: bounds,
@@ -94,6 +159,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+// update the map
+function initLeafletMap(lat, lng) {
+    if (!map) {  // If the map is not yet initialized, create it
+        map = L.map('map').setView([lat, lng], 12);
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    } else {
+        // If the map is already initialized, just update the center and zoom
+        map.setView([lat, lng], 12);
+    }
+
+    // Remove any existing markers to avoid stacking them
+    if (map._layers) {
+        Object.keys(map._layers).forEach(function(layerId) {
+            const layer = map._layers[layerId];
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer); // Remove the existing marker
+            }
+        });
+    }
+
+    // Add a new marker to the map for the given coordinates
+    L.marker([lat, lng]).addTo(map)
+        .bindPopup('Field Location') // Optional: Add a popup for the marker
+        .openPopup(); // Optional: Automatically open the popup
+}
 
 //added field
 $("#addField").click(function () {
@@ -177,7 +272,7 @@ $(document).ready(function () {
     }
 
     function populateFields(fields) {
-        const container = $('.item-container');
+        const container = $('#field-container');
         container.empty(); // Clear existing content
 
         if (fields.length === 0) {
@@ -192,7 +287,15 @@ $(document).ready(function () {
             const image1Src = field.image1 ? `data:image/jpeg;base64,${field.image1}` : 'https://via.placeholder.com/600x200?text=Field+Image+1';
             const image2Src = field.image2 ? `data:image/jpeg;base64,${field.image2}` : 'https://via.placeholder.com/600x200?text=Field+Image+2';
             const card = `
-                <div class="card-custom data-field-id="${field.fieldId}">
+                <div class="card-custom "
+                data-code="${field.fieldId}"
+                data-name="${field.name}"
+                data-size="${field.size}"
+                data-location="${field.location}"
+                data-image1="${image1Src}"
+                data-image2="${image2Src}"
+               
+                >
                     <div class="slider" data-slider-index="0">
                       <img src="${image1Src}" class="active" alt="Field Image 1">
                        <img src="${image2Src}" alt="Field Image 2">
@@ -215,12 +318,13 @@ $(document).ready(function () {
                             <p>GPS Coordinates: ${field.location}</p>
                         </div>
                         <div class="view-more-container">
-                            <button type="button" class="btn view-btn" onclick="openFieldModal(${field.fieldId})">View more</button>
+                            <button type="button" class="btn view-btn" onclick="openFieldModal(this)">View more</button>
                         </div>
                     </div>
                 </div>
             `;
             container.append(card);
+          console.log(field.fieldId)
         });
 
        // initializeSliders();
@@ -251,9 +355,78 @@ $(document).ready(function () {
         });
     }
 
-    function openFieldModal(fieldId) {
-        // Fetch and display additional details for the field in a modal
-        $('#fieldDetailModal').modal('show');
-    }
+
 });
+var fieldId =null;
+
+//view field data modal
+function openFieldModal( button) {
+    // Get the closest .card-custom container
+    const card = $(button).closest('.card-custom');
+
+    const fieldCode = card.data('code');
+    fieldId=fieldCode;
+    const fieldName = card.data('name');
+    const fieldLocation = card.data('location'); // In "lat, long" format
+    const fieldSize = card.data('size');
+    const image1Src = card.data('image1');
+    const image2Src = card.data('image2')
+    console.log(fieldCode)
+    // Populate modal fields
+    $('#fieldCode').val(fieldCode);
+    $('#fieldName').val(fieldName);
+    $('#fieldLocation').val(fieldLocation);
+    $('#fieldSize').val(fieldSize);
+    // getFieldStaff(fieldCode)
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldCode}/staff`, // Adjust the endpoint as needed
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function(response) {
+            // Assuming the response is an array of staff objects with "name" and "id"
+            populateStaffDropdown(response);
+        },
+        error: function() {
+            // If there is no staff, display a "No staff assigned" message
+            populateStaffDropdown([]);
+        }
+    });
+    // Set field images
+    $('.image-gallery').html(`
+        <img src="${image1Src}" alt="Field Image 1" class="field-image">
+        <img src="${image2Src}" alt="Field Image 2" class="field-image">
+    `);
+
+   $("#fieldDetailModal").modal('show')
+
+
+
+}
+
+  $("#FieldUpdateBtn").click(function() {
+        toggleFieldEditMode();
+    })
+
+function populateStaffDropdown(staff) {
+    // Find the staff dropdown
+    const staffDropdown = $('#field-staff');
+
+    // Clear the current options
+    staffDropdown.empty();
+
+    // If there is no staff, display "No staff assigned"
+    if (staff.length === 0) {
+        staffDropdown.append('<option>No staff assigned</option>');
+    } else {
+        // Join the staff names with a comma and display as a single option
+        const staffNames = staff.map(staffMember => staffMember.firstName).join(', ');
+        staffDropdown.append(`<option>${staffNames}</option>`);
+    }
+}
+
+
+
+
 
