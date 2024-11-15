@@ -40,6 +40,8 @@ public class StaffEntity {
 
     @OneToMany(mappedBy = "staff",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<VehicleEntity> vehicles;
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EquipmentEntity> equipment;
 
 
 }

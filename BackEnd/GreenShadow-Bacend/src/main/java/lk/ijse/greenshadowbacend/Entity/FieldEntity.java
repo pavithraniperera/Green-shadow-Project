@@ -25,7 +25,7 @@ public class FieldEntity {
     private String image1;
     @Column(columnDefinition = "LONGTEXT")
     private String image2;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "staff_fields_detail",
             joinColumns = @JoinColumn(name = "field_id"),
@@ -37,6 +37,9 @@ public class FieldEntity {
     private List<CropEntity> crops ;
     @ManyToMany(mappedBy = "fieldLogs",cascade = CascadeType.ALL)
     private List<LogEntity> logs;
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EquipmentEntity> equipment;
+
 
 
 }
