@@ -29,8 +29,8 @@ public class FieldController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> saveField(
             @RequestParam("fieldData") String fieldData,
-            @RequestParam("image1") MultipartFile image1,
-            @RequestParam("image2") MultipartFile image2
+            @RequestParam(value = "image1", required = false) MultipartFile image1,
+            @RequestParam(value = "image2", required = false) MultipartFile image2
     ) {
         try {
             System.out.println(fieldData);
