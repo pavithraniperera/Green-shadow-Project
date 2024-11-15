@@ -119,6 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+//added field
+
 $("#addField").click(function () {
 
     const fieldName = $("#Name").val();
@@ -146,7 +148,7 @@ $("#addField").click(function () {
 
     // Perform the AJAX request
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/fields", // Replace with your actual backend API URL
+        url: "http://localhost:8080/greenShadow/api/v1/fields",
         type: "POST",
         data: formData,
         processData: false,
@@ -156,13 +158,26 @@ $("#addField").click(function () {
         },
         success: function (response) {
             console.log(response)
+            // Clear the input fields in the modal
+            clearFieldForm();
+            // Hide the modal
+            $("#addFieldModal").modal('hide');
             showAlert("Field created successfully", 'success');
-            // Optionally, redirect or show a success message
+
         },
         error: function (xhr, status, error) {
             console.log(status,error)
            showAlert("Failed to create field:", 'error');
-            // Handle error display
+
         }
     });
 });
+
+function clearFieldForm(){
+    // Clear the form fields
+    $("#addFieldModal").find("input, textarea, select").val("");
+
+    // If you're previewing images in <img> tags, clear the preview as well
+    $("#preview1").attr("src", ""); // Clear first image preview
+    $("#preview2").attr("src", ""); // Clear second image preview
+}
