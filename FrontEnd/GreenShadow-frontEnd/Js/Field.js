@@ -1,29 +1,5 @@
 // JavaScript for Image Slider
-document.querySelectorAll('.slider').forEach((slider, sliderIndex) => {
-    const images = slider.querySelectorAll('img');
-    let currentImageIndex = 0;
 
-    function showImage(index) {
-        images.forEach((img, i) => {
-            img.classList.remove('active');
-            if (i === index) {
-                img.classList.add('active');
-            }
-        });
-    }
-
-    // Event listener for next button
-    slider.querySelector('.next-button').addEventListener('click', () => {
-        currentImageIndex = (currentImageIndex + 1) % images.length;
-        showImage(currentImageIndex);
-    });
-
-    // Event listener for previous button
-    slider.querySelector('.prev-button').addEventListener('click', () => {
-        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-        showImage(currentImageIndex);
-    });
-});
 function toggleFieldEditMode() {
     $('#fieldDetailModal').modal('hide');
 
@@ -120,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 //added field
-
 $("#addField").click(function () {
 
     const fieldName = $("#Name").val();
@@ -181,3 +156,104 @@ function clearFieldForm(){
     $("#preview1").attr("src", ""); // Clear first image preview
     $("#preview2").attr("src", ""); // Clear second image preview
 }
+$(document).ready(function () {
+    fetchFields();
+
+    function fetchFields() {
+        $.ajax({
+            url: 'http://localhost:8080/greenShadow/api/v1/fields',
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            success: function (fields) {
+                populateFields(fields);
+            },
+            error: function (error) {
+                console.error("Error fetching fields:", error);
+                $(".no-data").show();
+            }
+        });
+    }
+
+    function populateFields(fields) {
+        const container = $('.item-container');
+        container.empty(); // Clear existing content
+
+        if (fields.length === 0) {
+            $(".no-data").show();
+            return;
+        }
+
+        $(".no-data").hide();
+
+        fields.forEach(field => {
+            // Use the Base64 string as the source for each image
+            const image1Src = field.image1 ? `data:image/jpeg;base64,${field.image1}` : 'https://via.placeholder.com/600x200?text=Field+Image+1';
+            const image2Src = field.image2 ? `data:image/jpeg;base64,${field.image2}` : 'https://via.placeholder.com/600x200?text=Field+Image+2';
+            const card = `
+                <div class="card-custom data-field-id="${field.fieldId}">
+                    <div class="slider" data-slider-index="0">
+                      <img src="${image1Src}" class="active" alt="Field Image 1">
+                       <img src="${image2Src}" alt="Field Image 2">
+                        <div class="slider-buttons">
+                            <button class="slider-button prev-button">&#10094;</button>
+                            <button class="slider-button next-button">&#10095;</button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="field-info">
+                            <h4>${field.name}</h4>
+                            <p>A beautiful field for growing crops.</p>
+                        </div>
+                        <div class="field-info">
+                            <h4>Size</h4>
+                            <p>${field.size} Sq. meters</p>
+                        </div>
+                        <div class="field-info">
+                            <h4>Location</h4>
+                            <p>GPS Coordinates: ${field.location}</p>
+                        </div>
+                        <div class="view-more-container">
+                            <button type="button" class="btn view-btn" onclick="openFieldModal(${field.fieldId})">View more</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.append(card);
+        });
+
+       // initializeSliders();
+        document.querySelectorAll('.slider').forEach((slider, sliderIndex) => {
+            const images = slider.querySelectorAll('img');
+            let currentImageIndex = 0;
+
+            function showImage(index) {
+                images.forEach((img, i) => {
+                    img.classList.remove('active');
+                    if (i === index) {
+                        img.classList.add('active');
+                    }
+                });
+            }
+
+            // Event listener for next button
+            slider.querySelector('.next-button').addEventListener('click', () => {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                showImage(currentImageIndex);
+            });
+
+            // Event listener for previous button
+            slider.querySelector('.prev-button').addEventListener('click', () => {
+                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                showImage(currentImageIndex);
+            });
+        });
+    }
+
+    function openFieldModal(fieldId) {
+        // Fetch and display additional details for the field in a modal
+        $('#fieldDetailModal').modal('show');
+    }
+});
+
