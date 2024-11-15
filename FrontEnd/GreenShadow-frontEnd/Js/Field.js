@@ -76,7 +76,7 @@ function setFieldLocation(locationString) {
     $('#location').val(`${latitude}° N, ${longitude}° E`);
 
     // Initialize the map with parsed latitude and longitude
-    initLeafletMap(latitude, longitude);
+    updateMap(latitude, longitude);
 }
 
 $("#addField").click(function () {
@@ -143,7 +143,8 @@ function previewImage(event, previewId) {
 let map =null
 
 //initialize the map
-document.addEventListener('DOMContentLoaded', function() {
+
+function initMap(){
     // Center coordinates for Panadura, Sri Lanka
     var panaduraCoordinates = [6.7114, 79.9072];
 
@@ -154,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // Initialize map centered on Panadura with zoom level suitable for the area
-     map = L.map('map', {
+    map = L.map('map', {
         center: panaduraCoordinates,
         zoom: 13,
         maxBounds: bounds,
@@ -193,22 +194,26 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#addFieldModal').on('shown.bs.modal', function () {
         map.invalidateSize(); // Refresh map to fit the container
     });
+}
+/*document.addEventListener('DOMContentLoaded', function() {
 
-    // Function to format latitude and longitude
-    function formatCoordinates(lat, lng) {
-        var latDirection = lat >= 0 ? 'N' : 'S';
-        var lngDirection = lng >= 0 ? 'E' : 'W';
 
-        var formattedLat = Math.abs(lat).toFixed(4) + '° ' + latDirection;
-        var formattedLng = Math.abs(lng).toFixed(4) + '° ' + lngDirection;
 
-        return formattedLat + ', ' + formattedLng;
-    }
+});*/
 
-});
+// Function to format latitude and longitude
+function formatCoordinates(lat, lng) {
+    var latDirection = lat >= 0 ? 'N' : 'S';
+    var lngDirection = lng >= 0 ? 'E' : 'W';
+
+    var formattedLat = Math.abs(lat).toFixed(4) + '° ' + latDirection;
+    var formattedLng = Math.abs(lng).toFixed(4) + '° ' + lngDirection;
+
+    return formattedLat + ', ' + formattedLng;
+}
 
 // update the map
-function initLeafletMap(lat, lng) {
+function updateMap(lat, lng) {
     if (!map) {  // If the map is not yet initialized, create it
         map = L.map('map').setView([lat, lng], 12);
 
@@ -298,6 +303,7 @@ function changeModalData(){
     document.getElementById("addField").style.display = "inline-block";
     // Show the "Save Changes" button
     document.getElementById("FieldSaveBtn").style.display = "none";
+    initMap()
 }
 function fetchFields() {
     $.ajax({
@@ -410,6 +416,7 @@ function clearFieldForm(){
 }
 $(document).ready(function () {
     fetchFields();
+    initMap()
 
 });
 var fieldId =null;
@@ -480,6 +487,47 @@ function populateStaffDropdown(staff) {
         staffDropdown.append(`<option>${staffNames}</option>`);
     }
 }
+
+$("#FieldDeleteBtn").click(function () {
+    const fieldId = $("#fieldCode").val(); // Assuming a hidden input or other source for field ID.
+
+    if (!fieldId) {
+        alert("Field ID is missing! Cannot delete the field.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
+        return;
+    }
+
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`, // Your delete endpoint
+        type: "DELETE",
+        headers: {
+            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+        },
+        success: function (response) {
+            // Perform actions on successful deletion
+            showAlert("Field deleted successfully.", "success");
+            $("#fieldDetailModal").modal("hide"); // Hide the modal
+
+            fetchFields()
+        },
+        error: function (xhr, status, error) {
+            // Handle errors
+            if (xhr.status === 404) {
+                showAlert("Field not found.", "error");
+            } else if (xhr.status === 400) {
+                showAlert("Invalid field ID.", "error");
+            } else {
+                showAlert("Error deleting field. Please try again.", "error");
+            }
+        }
+    });
+
+});
+
 
 
 
