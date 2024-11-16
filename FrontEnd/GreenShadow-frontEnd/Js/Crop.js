@@ -140,7 +140,7 @@ function addCropToUI(crops) {
 
         const image = crop.image1 ? `data:image/jpeg;base64,${crop.image1}` : 'https://via.placeholder.com/600x200?text=No+Image';
         const cropCard = `
-        <div class="card-custom">
+        <div class="card-custom"  data-id="${crop.id}">
             <!-- Crop Image -->
             <div class="image-container">
                 <img src="${image}" alt="Crop Image">
@@ -173,8 +173,12 @@ function addCropToUI(crops) {
                 </div>
 
                 <!-- Centered View More Button -->
-                <div class="view-more-container">
-                    <button type="button" class="btn view-btn" data-toggle="modal" data-target="#cropDetailModal">View more</button>
+               <div class="view-more-container">
+                    <button id="viewCrop" class="btn view-btn viewCropData" 
+                        data-crop='${JSON.stringify(crop)}' 
+                        onclick="viewCropData(this)">
+                        View more
+                    </button>
                 </div>
             </div>
         </div>
@@ -203,5 +207,30 @@ function fetchFieldById(crop, callback) {
         }
     });
 }
+function viewCropData(button){
+
+    // Parse crop data from the button's data attribute
+    const cropDetail = JSON.parse($(button).attr('data-crop'));
+    console.log(cropDetail)
+    console.log(cropDetail.id,cropDetail.specificName)
+
+    // Populate modal fields
+    $('#cropId').val(cropDetail.id);
+    $('#specialName').val(cropDetail.specificName);
+    $('#commonName').val(cropDetail.commonName);
+    $('#category').val(cropDetail.category);
+    $('#season').val(cropDetail.season);
+    // Update the modal image
+    const imageSrc = cropDetail.image1
+        ? `data:image/jpeg;base64,${cropDetail.image1}`
+        : 'https://via.placeholder.com/600x200?text=No+Image';
+    $('#cropDetailModal .modal-header img').attr('src', imageSrc);
+
+    // Fetch field name for the modal
+    fetchFieldById(cropDetail, function (fieldName) {
+        $('#field').val(fieldName);
+    });
+    $("#cropDetailModal").modal("show");
+};
 
 
