@@ -120,6 +120,7 @@ $("#addField").click(function () {
             clearFieldForm();
             // Hide the modal
             $("#addFieldModal").modal('hide');
+            fetchFields()
             showAlert("Field created successfully", 'success');
 
         },
