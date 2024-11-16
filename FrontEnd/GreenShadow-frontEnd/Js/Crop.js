@@ -347,4 +347,44 @@ function viewCropData(button){
     $("#cropDetailModal").modal("show");
 };
 
+$("#CropDeleteBtn").click(function () {
+    const cropId = $("#cropId").val(); // Assuming a hidden input or other source for field ID.
+
+    if (!cropId) {
+        alert("Field ID is missing! Cannot delete the field.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
+        return;
+    }
+
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/crops/${cropId}`, // Your delete endpoint
+        type: "DELETE",
+        headers: {
+            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+        },
+        success: function (response) {
+            // Perform actions on successful deletion
+            showAlert("Crop deleted successfully.", "success");
+            $("#cropDetailModal").modal("hide"); // Hide the modal
+
+            fetchCrops()
+        },
+        error: function (xhr, status, error) {
+            // Handle errors
+            if (xhr.status === 404) {
+                showAlert("Field not found.", "error");
+            } else if (xhr.status === 400) {
+                showAlert("Invalid field ID.", "error");
+            } else {
+                showAlert("Error deleting field. Please try again.", "error");
+            }
+        }
+    });
+
+});
+
 
