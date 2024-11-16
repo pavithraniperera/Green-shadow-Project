@@ -1,7 +1,7 @@
 $(document).ready(function () {
   fetchCrops()
 });
-
+var cropId;
 // Function to preview the uploaded image
 function previewCropImage(event, previewId) {
     const output = document.getElementById(previewId);
@@ -11,16 +11,128 @@ function previewCropImage(event, previewId) {
 
 // Function to open the Add Field Modal
 function toggleEditCropMode() {
+    updateCropData(cropId)
+
+}
+function updateCropData(cropId){
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/crops/${cropId}`, // Adjust URL as necessary
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function(response) {
+            // Call function to populate the modal with the field data
+            console.log(response)
+            populateCropModal(response);
+        },
+        error: function() {
+            console.log('Error retrieving crop data.');
+        }
+    });
+}
+function populateCropModal(cropData) {
+
+    // Populate modal fields with crop data
+    $('#Id').val(cropData.id); // Crop ID
+    $('#CropSpecialName').val(cropData.specificName); // Special Name
+    $('#CropCommonName').val(cropData.commonName); // Common Name
+    $('#CropCategory').val(cropData.category); // Category
+    $('#CropSeason').val(cropData.season); // Season
+
+
+
+    // Set the image preview
+    const imageSrc = cropData.image1
+        ? `data:image/jpeg;base64,${cropData.image1}`
+        : 'https://via.placeholder.com/600x200?text=No+Image';
+    $('#cropPreview').attr('src', imageSrc).show(); // Set and show the image preview
+
+     fetchAndPopulateFields();
+    if (cropData.fieldId) {
+        console.log(cropData.fieldId)
+        // Select the field option based on fieldId
+        $('#fieldSelect').val(cropData.fieldId).trigger('change');
+        // This selects the option by value
+    }
+
     $("#cropDetailModal").modal('hide')
 
     $('#addCropModal').modal('show');
     document.getElementById('addCropModalLabel').innerText = 'Update Crop Details';
 
     // Change the button text from "Add Staff" to "Save Changes"
-    const addCropBtn = document.getElementById('addCrop');
-    addCropBtn.innerText = 'Save Changes'
+    // Hide the "Add Field" button
+    document.getElementById("addCrop").style.display = "none";
+    // Show the "Save Changes" button
+    document.getElementById("CropSaveBtn").style.display = "inline-block";
 }
 
+$("#CropSaveBtn").click(function () {
+
+    const cropId = $("#Id").val();
+    const cropSpecialName = $("#CropSpecialName").val();
+    const cropCommonName = $("#CropCommonName").val();
+    const cropCategory = $("#CropCategory").val();
+    const cropSeason = $("#CropSeason").val();
+    const cropFieldId = $("#fieldSelect").val();
+    const cropImage = $("#cropImage")[0].files[0];
+
+// Create a JavaScript object representing crop data
+    const cropData = {
+
+        specificName: cropSpecialName,
+        commonName: cropCommonName,
+        category: cropCategory,
+        season: cropSeason,
+        fieldId: cropFieldId
+    };
+
+// Create FormData and append data and images
+    const formData = new FormData();
+    formData.append("cropData", JSON.stringify(cropData));
+    if (cropImage) formData.append("imageFile", cropImage);
+
+
+    // Perform the AJAX request
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/crops/${cropId}`,
+        type: "PUT",
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+        },
+        success: function (response) {
+            console.log(response)
+            // Clear the input fields in the modal
+
+            // Hide the modal
+            $("#addCropModal").modal('hide');
+            fetchCrops();
+            changeCropModalData();
+            showAlert("Crop Updated successfully", 'success');
+
+        },
+        error: function (xhr, status, error) {
+            console.log(status,error)
+            showAlert("Failed to Update Crop", 'error');
+
+        }
+    });
+});
+function changeCropModalData(){
+    // Change the modal header to "Update Member"
+    document.getElementById('addCropModalLabel').innerText = 'Add Crop';
+
+    // Change the button text from "Add Staff" to "Save Changes"
+    // Hide the "Add Field" button
+    document.getElementById("addCrop").style.display = "inline-block";
+    // Show the "Save Changes" button
+    document.getElementById("CropSaveBtn").style.display = "none";
+
+}
 //save Crop function
 // Attach click event listener to the Add Crop button
 $('#openAddModal').click(function () {
@@ -209,10 +321,12 @@ function fetchFieldById(crop, callback) {
 }
 function viewCropData(button){
 
+
     // Parse crop data from the button's data attribute
     const cropDetail = JSON.parse($(button).attr('data-crop'));
     console.log(cropDetail)
     console.log(cropDetail.id,cropDetail.specificName)
+    cropId =cropDetail.id;
 
     // Populate modal fields
     $('#cropId').val(cropDetail.id);
