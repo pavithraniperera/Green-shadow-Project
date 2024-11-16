@@ -1,3 +1,7 @@
+$(document).ready(function () {
+  fetchCrops()
+});
+
 // Function to preview the uploaded image
 function previewCropImage(event, previewId) {
     const output = document.getElementById(previewId);
@@ -26,7 +30,7 @@ $('#addCrop').click(function () {
 
     // Gather form data
     const formData = new FormData();
-    cropData={
+   const cropData={
         commonName: $('#CropCommonName').val(),
         specificName:$('#CropSpecialName').val(),
         category: $('#CropCategory').val(),
@@ -60,8 +64,7 @@ $('#addCrop').click(function () {
             $('#cropPreview').hide().attr('src', '');
 
             // update the  UI
-
-
+            fetchCrops()
             // Optional: Show a success message
             showAlert('Crop added successfully!','success');
         },
@@ -102,13 +105,45 @@ function fetchAndPopulateFields() {
 }
 
 
+function fetchCrops() {
+    $.ajax({
+        url: 'http://localhost:8080/greenShadow/api/v1/crops',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function (crops) {
+            addCropToUI(crops);
+        },
+        error: function (error) {
+            console.error("Error fetching fields:", error);
+            $(".no-data").show();
+        }
+    });
+}
 // Function to add the new crop card to the UI dynamically
-function addCropToUI(crop) {
-    const cropCard = `
+function addCropToUI(crops) {
+    const container = $('#crop-container');
+    container.empty(); // Clear existing content
+
+    if (crops.length === 0) {
+        $(".no-data").show();
+        return;
+    }
+
+    crops.forEach(crop => {
+        //set field name that related to crop
+        fetchFieldById(crop, function (fieldName) {
+            $(`#field-info-${crop.id} p`).text(fieldName);
+
+        });
+
+        const image = crop.image1 ? `data:image/jpeg;base64,${crop.image1}` : 'https://via.placeholder.com/600x200?text=No+Image';
+        const cropCard = `
         <div class="card-custom">
             <!-- Crop Image -->
             <div class="image-container">
-                <img src="${crop.image || 'https://via.placeholder.com/600x200?text=No+Image'}" alt="Crop Image">
+                <img src="${image}" alt="Crop Image">
             </div>
 
             <!-- Card Content -->
@@ -122,7 +157,7 @@ function addCropToUI(crop) {
                 <!-- Special Name -->
                 <div class="field-info">
                     <h4>Special Name</h4>
-                    <p>${crop.specialName}</p>
+                    <p>${crop.specificName}</p>
                 </div>
 
                 <!-- Category -->
@@ -132,9 +167,9 @@ function addCropToUI(crop) {
                 </div>
 
                 <!-- Field -->
-                <div class="field-info">
+                <div class="field-info" id="field-info-${crop.id}">
                     <h4>Field</h4>
-                    <p>${crop.field}</p>
+                    <p>.... </p>
                 </div>
 
                 <!-- Centered View More Button -->
@@ -144,4 +179,29 @@ function addCropToUI(crop) {
             </div>
         </div>
     `;
+        container.append(cropCard);
+    });
+
 }
+//fetch field data of related field
+function fetchFieldById(crop, callback) {
+    console.log("Crop Data:", crop);
+    console.log("Field ID:", crop.fieldId);
+
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${crop.fieldId}`, // Replace with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token") // Include token if required
+        },
+        success: function (response) {
+            console.log("Fetched Field Data:", response);
+            callback(response.name); // Pass the field name to the callback
+        },
+        error: function (error) {
+            console.error("Error fetching field by ID:", error);
+        }
+    });
+}
+
+
