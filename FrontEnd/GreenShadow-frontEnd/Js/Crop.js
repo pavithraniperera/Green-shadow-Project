@@ -110,6 +110,7 @@ $("#CropSaveBtn").click(function () {
 
             // Hide the modal
             $("#addCropModal").modal('hide');
+            clearCrop();
             fetchCrops();
             changeCropModalData();
             showAlert("Crop Updated successfully", 'success');
@@ -174,6 +175,7 @@ $('#addCrop').click(function () {
             // Clear the form fields
             $('#addCropForm')[0].reset();
             $('#cropPreview').hide().attr('src', '');
+
 
             // update the  UI
             fetchCrops()
@@ -386,5 +388,24 @@ $("#CropDeleteBtn").click(function () {
     });
 
 });
+
+function clearCrop(){
+    // Clear all input fields
+    $('#addCropForm')[0].reset();
+
+    // Clear the modal title if necessary
+    $('#addCropModalLabel').text('Add New Crop');
+
+    // Hide the "Save Changes" button and show the "Add Crop" button again
+    $('#CropSaveBtn').hide();
+    $('#addCrop').show();
+
+    // Clear the image preview
+    $('#cropPreview').attr('src', '').hide(); // Hide the preview image
+
+    // Reset the field select dropdown
+    $('#fieldSelect').val(''); // Reset the field dropdown to the default state
+
+}
 
 
