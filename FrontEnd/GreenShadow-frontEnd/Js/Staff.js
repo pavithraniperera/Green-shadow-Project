@@ -1,4 +1,4 @@
-function toggleEditMode() {
+function toggleStaffEditMode() {
     // Close the staffDetailModal
     $('#staffDetailModal').modal('hide');
 
@@ -40,18 +40,21 @@ document.querySelectorAll('.staff-table tbody tr').forEach(row => {
 
 // Function to add an assigned field combo box
 function addField() {
+    // Fetch existing options from the first dropdown
+    const existingOptions = $('.fieldForStaff:first').html();
+
+    // Create a new dropdown with the same options
     const container = document.getElementById('assignedFieldsContainer');
     const fieldDiv = document.createElement('div');
     fieldDiv.className = 'd-flex align-items-center mb-2';
     fieldDiv.innerHTML = `
-            <select class="form-control glass-input mr-2" name="assignedFields[]" required>
-                <option value="">Select Field</option>
-                <option value="Field A">Field A</option>
-                <option value="Field B">Field B</option>
-                <!-- Add more fields dynamically if needed -->
-            </select>
-            <button type="button" class="btn btn-sm custom-btn" onclick="removeField(this)"><i class="fa-regular fa-trash-can" style="color:green"></i></button>
-        `;
+        <select class="form-control glass-input mr-2 fieldForStaff" name="assignedFields[]" required>
+            ${existingOptions || '<option value="">Select Field</option>'}
+        </select>
+        <button type="button" class="btn btn-sm custom-btn" onclick="removeField(this)">
+            <i class="fa-regular fa-trash-can" style="color:green"></i>
+        </button>
+    `;
     container.appendChild(fieldDiv);
 }
 
@@ -61,6 +64,7 @@ function removeField(button) {
 }
 
 // Function to add an assigned vehicle combo box
+/*
 function addVehicle() {
     const container = document.getElementById('assignedVehiclesContainer');
     const vehicleDiv = document.createElement('div');
@@ -76,17 +80,48 @@ function addVehicle() {
         `;
     container.appendChild(vehicleDiv);
 }
+*/
 
 // Function to remove an assigned vehicle combo box
-function removeVehicle(button) {
+/*function removeVehicle(button) {
     button.parentElement.remove();
-}
+}*/
 
 // Function to clear the form
-function clearForm() {
+function clearStaffForm() {
     document.getElementById("addStaffForm").reset();
     document.getElementById("assignedFieldsContainer").innerHTML = '';
     document.getElementById("assignedVehiclesContainer").innerHTML = '';
     addField(); // Add one initial field combo box
-    addVehicle(); // Add one initial vehicle combo box
+   // addVehicle(); // Add one initial vehicle combo box
 }
+
+function fetchAllFieldsForStaff() {
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/fields", // Update with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            // Assuming response is an array of FieldDto objects
+            const fieldSelect = $(".fieldForStaff");
+            fieldSelect.empty(); // Clear existing options
+            fieldSelect.append('<option value="">Select Field</option>'); // Add default option
+
+            // Populate the select element with field names and IDs
+            response.forEach(field => {
+                const option = `<option value="${field.fieldId}">${field.name}</option>`;
+                fieldSelect.append(option);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching fields:", error);
+            showAlert("Failed to load fields. Please try again later.",'error');
+        }
+    });
+}
+$("#staffSave").click(function (){
+    fetchAllFieldsForStaff()
+    $("#addStaffModal").modal("show")
+})
