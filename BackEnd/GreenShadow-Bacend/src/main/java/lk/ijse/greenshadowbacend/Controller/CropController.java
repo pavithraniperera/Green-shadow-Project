@@ -84,6 +84,7 @@ public class CropController {
 
             return ResponseEntity.status(HttpStatus.OK).body("Crop updated successfully");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating Crop: " + e.getMessage());
         }
     }
