@@ -77,6 +77,17 @@ public class StaffServiceImpl implements StaffService {
         existingStaff.setJoinDate(dto.getJoinDate());
         existingStaff.setRole(dto.getRole());
 
+        if (dto.getFieldIds() != null && !dto.getFieldIds().isEmpty()) {
+            // Retrieve and associate fields
+            Set<FieldEntity> associatedFields = new HashSet<>();
+            for (String fieldId : dto.getFieldIds()) {
+                FieldEntity field = fieldDao.findById(fieldId)
+                        .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + fieldId));
+                associatedFields.add(field);
+            }
+            existingStaff.setFields(new ArrayList<>(associatedFields));
+        }
+
         // Save updated entity
         StaffEntity updatedEntity = staffDao.save(existingStaff);
 
