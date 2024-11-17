@@ -1,5 +1,6 @@
 package lk.ijse.greenshadowbacend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class FieldEntity {
     private String image2;
 
     @ManyToMany(mappedBy = "fields",cascade = CascadeType.ALL)
+    @JsonBackReference
     private Set<StaffEntity> staffMembers = new HashSet<>();
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, orphanRemoval = true)

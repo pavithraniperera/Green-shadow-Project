@@ -78,20 +78,30 @@ public class StaffServiceImpl implements StaffService {
         existingStaff.setRole(dto.getRole());
 
         if (dto.getFieldIds() != null && !dto.getFieldIds().isEmpty()) {
+            // Clear the current fields association to avoid duplicate entries
+            existingStaff.getFields().clear();
+
             // Retrieve and associate fields
-            Set<FieldEntity> associatedFields = new HashSet<>();
             for (String fieldId : dto.getFieldIds()) {
                 FieldEntity field = fieldDao.findById(fieldId)
                         .orElseThrow(() -> new IllegalArgumentException("Field not found with ID: " + fieldId));
-                associatedFields.add(field);
-            }
-            existingStaff.setFields(new ArrayList<>(associatedFields));
-        }
 
-        // Save updated entity
+                // Add the staff to the field's staff list (bidirectional association)
+                if (!field.getStaffMembers().contains(existingStaff)) {
+                    field.getStaffMembers().add(existingStaff);
+                }
+
+                // Add the field to the staff's fields list
+                existingStaff.getFields().add(field);
+            }
+        } else {
+            // If no fields are provided, clear the association
+            existingStaff.getFields().clear();
+        }
+         // Save the updated entity
         StaffEntity updatedEntity = staffDao.save(existingStaff);
 
-        // Convert updated entity back to DTO
+        // Convert the updated entity back to DTO
         return staffMapper.toStaffDto(updatedEntity);
     }
 
