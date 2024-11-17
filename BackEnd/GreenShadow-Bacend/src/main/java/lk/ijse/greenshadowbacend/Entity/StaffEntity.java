@@ -1,5 +1,6 @@
 package lk.ijse.greenshadowbacend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,7 @@ public class StaffEntity {
     @JsonManagedReference // Manage the serialization
     private List<FieldEntity> fields;
     @ManyToMany(mappedBy = "staffLogs",cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<LogEntity> logs;
 
     @OneToMany(mappedBy = "staff",cascade = CascadeType.ALL,orphanRemoval = true)

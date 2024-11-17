@@ -1,5 +1,6 @@
 package lk.ijse.greenshadowbacend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class CropEntity {
     @JoinColumn(name = "field_id")
     private FieldEntity field;
     @ManyToMany(mappedBy = "cropLogs",cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<LogEntity> logs;
 }

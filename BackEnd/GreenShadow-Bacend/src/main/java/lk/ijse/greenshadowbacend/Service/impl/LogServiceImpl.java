@@ -17,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +84,7 @@ public class LogServiceImpl implements LogService {
             existingLog.setImage2(dto.getImage2());
         }
 
-        // Update associated staff
+       /* // Update associated staff
         if (dto.getStaffIds() != null && !dto.getStaffIds().isEmpty()) {
             List<StaffEntity> staffEntities = staffDao.findAllById(dto.getStaffIds());
             if (staffEntities.size() != dto.getStaffIds().size()) {
@@ -110,7 +109,28 @@ public class LogServiceImpl implements LogService {
                 throw new IllegalArgumentException("One or more crop IDs are invalid.");
             }
             existingLog.setCropLogs(new HashSet<>(cropEntities));
+        }*/
+        // Update associated staff
+        if (dto.getStaffIds() != null && !dto.getStaffIds().isEmpty()) {
+            updateStaffAssociations(existingLog, dto.getStaffIds());
+        } else {
+            existingLog.getStaffLogs().clear(); // Clear if no staff IDs are provided
         }
+
+        // Update associated fields
+        if (dto.getFieldIds() != null && !dto.getFieldIds().isEmpty()) {
+            updateFieldAssociations(existingLog, dto.getFieldIds());
+        } else {
+            existingLog.getFieldLogs().clear(); // Clear if no field IDs are provided
+        }
+
+        // Update associated crops
+        if (dto.getCropIds() != null && !dto.getCropIds().isEmpty()) {
+            updateCropAssociations(existingLog, dto.getCropIds());
+        } else {
+            existingLog.getCropLogs().clear(); // Clear if no crop IDs are provided
+        }
+
 
         // Save the updated log entity and return the updated DTO
         return logMapping.toLogDto(logDao.save(existingLog));
@@ -137,4 +157,60 @@ public class LogServiceImpl implements LogService {
     public List<LogDto> findAll() {
         return  logMapping.asLogDtoList(logDao.findAll());
     }
+
+    private void updateStaffAssociations(LogEntity log, Set<String> staffIds) {
+        List<StaffEntity> staffEntities = staffDao.findAllById(staffIds);
+        if (staffEntities.size() != staffIds.size()) {
+            throw new IllegalArgumentException("One or more staff IDs are invalid.");
+        }
+
+        // Add only new associations
+        for (StaffEntity staff : staffEntities) {
+            if (!log.getStaffLogs().contains(staff)) {
+                log.getStaffLogs().add(staff);
+                staff.getLogs().add(log); // Maintain bi-directional association
+            }
+        }
+
+        // Remove unreferenced associations
+        log.getStaffLogs().removeIf(staff -> !staffEntities.contains(staff));
+    }
+
+    private void updateFieldAssociations(LogEntity log, Set<String> fieldIds) {
+        List<FieldEntity> fieldEntities = fieldDao.findAllById(fieldIds);
+        if (fieldEntities.size() != fieldIds.size()) {
+            throw new IllegalArgumentException("One or more field IDs are invalid.");
+        }
+
+        // Add only new associations
+        for (FieldEntity field : fieldEntities) {
+            if (!log.getFieldLogs().contains(field)) {
+                log.getFieldLogs().add(field);
+                field.getLogs().add(log); // Maintain bi-directional association
+            }
+        }
+
+        // Remove unreferenced associations
+        log.getFieldLogs().removeIf(field -> !fieldEntities.contains(field));
+    }
+
+    private void updateCropAssociations(LogEntity log, Set<String> cropIds) {
+        List<CropEntity> cropEntities = cropDao.findAllById(cropIds);
+        if (cropEntities.size() != cropIds.size()) {
+            throw new IllegalArgumentException("One or more crop IDs are invalid.");
+        }
+
+        // Add only new associations
+        for (CropEntity crop : cropEntities) {
+            if (!log.getCropLogs().contains(crop)) {
+                log.getCropLogs().add(crop);
+                crop.getLogs().add(log); // Maintain bi-directional association
+            }
+        }
+
+        // Remove unreferenced associations
+        log.getCropLogs().removeIf(crop -> !cropEntities.contains(crop));
+    }
+
 }
+

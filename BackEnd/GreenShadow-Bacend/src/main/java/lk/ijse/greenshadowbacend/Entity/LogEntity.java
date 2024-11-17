@@ -1,5 +1,6 @@
 package lk.ijse.greenshadowbacend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class LogEntity {
             joinColumns = @JoinColumn(name = "log_id"),
             inverseJoinColumns = @JoinColumn(name = "staff_id")
     )
+    @JsonManagedReference // Manage the serialization
     private Set<StaffEntity> staffLogs = new HashSet<>();
     @ManyToMany
     @JoinTable(
@@ -35,6 +37,7 @@ public class LogEntity {
             joinColumns = @JoinColumn(name = "log_id"),
             inverseJoinColumns = @JoinColumn(name = "field_id")
     )
+    @JsonManagedReference // Manage the serialization
     private Set<FieldEntity> fieldLogs = new HashSet<>();
 
     @ManyToMany
@@ -43,6 +46,7 @@ public class LogEntity {
             joinColumns = @JoinColumn(name = "log_id"),
             inverseJoinColumns = @JoinColumn(name = "crop_id")
     )
+    @JsonManagedReference // Manage the serialization
     private Set<CropEntity> cropLogs = new HashSet<>();
 
 }

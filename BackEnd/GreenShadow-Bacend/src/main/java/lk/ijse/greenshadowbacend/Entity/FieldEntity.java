@@ -34,6 +34,7 @@ public class FieldEntity {
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CropEntity> crops ;
     @ManyToMany(mappedBy = "fieldLogs",cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<LogEntity> logs;
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EquipmentEntity> equipment;
