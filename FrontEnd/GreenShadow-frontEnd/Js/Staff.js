@@ -125,3 +125,77 @@ $("#staffSave").click(function (){
     fetchAllFieldsForStaff()
     $("#addStaffModal").modal("show")
 })
+
+$("#addStaffBtn").click(function (){
+    console.log("clicked")
+    // Gather form data
+
+    const firstName = $("#firstNameModal").val();
+    const lastName = $("#lastNameModal").val();
+    const email = $("#emailModal").val();
+    const address = $("#addressModal").val();
+    const contact = $("#contactModal").val();
+    const dob = $("#dobModal").val();
+    const gender = $("#genderModal").val();
+    const role = $("#roleModal").val();
+    const designation = $("#designationModal").val();
+    const joinDate = $("#joinDateModal").val();
+
+    // Get all selected field IDs
+    const assignedFields = [];
+    $(".fieldForStaff").each(function () {
+        const fieldId = $(this).val();
+        if (fieldId) {
+            assignedFields.push(fieldId);
+        }
+    });
+
+    // Validate required fields
+  /*  if ( !firstName || !lastName || !email || !contact || !dob || !gender || !role || !designation ||joinDate ||address){
+        showAlert("Please fill all required fields.",'error');
+        return;
+    }
+
+    if (assignedFields.length === 0) {
+        showAlert("Please assign at least one field.",'error');
+        return;
+    }*/
+    // Create the payload
+    const staffData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        contact: contact,
+        dob: dob,
+        address:address,
+        gender: gender,
+        role: role,
+        designation: designation,
+        joinDate:joinDate,
+        fieldIds: assignedFields // Field IDs as a list
+    };
+    console.log(staffData)
+
+
+    // AJAX call to save staff
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Replace with your backend URL
+        type: "POST",
+        contentType: "application/json",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        data: JSON.stringify(staffData),
+        success: function (response) {
+            showAlert("Staff added successfully!","success");
+            $("#addStaffModal").modal("hide"); // Close the modal
+            $("#addStaffForm")[0].reset(); // Clear the form
+        },
+        error: function (xhr) {
+            console.error("Error while saving staff:", xhr.responseText);
+            showAlert("Failed to add staff. Please try again.","error");
+        }
+    });
+
+
+})
