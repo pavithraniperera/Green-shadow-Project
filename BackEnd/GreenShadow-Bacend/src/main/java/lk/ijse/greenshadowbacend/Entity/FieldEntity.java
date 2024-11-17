@@ -25,12 +25,8 @@ public class FieldEntity {
     private String image1;
     @Column(columnDefinition = "LONGTEXT")
     private String image2;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "staff_fields_detail",
-            joinColumns = @JoinColumn(name = "field_id"),
-            inverseJoinColumns = @JoinColumn(name = "staff_id")
-    )
+
+    @ManyToMany(mappedBy = "fields",cascade = CascadeType.ALL)
     private Set<StaffEntity> staffMembers = new HashSet<>();
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, orphanRemoval = true)

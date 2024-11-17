@@ -33,7 +33,12 @@ public class StaffEntity {
 
 
 
-    @ManyToMany(mappedBy = "staffMembers",cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "staff_fields_detail",
+            joinColumns = @JoinColumn(name = "staff_id"),
+            inverseJoinColumns = @JoinColumn(name = "field_id")
+    )
     private List<FieldEntity> fields;
     @ManyToMany(mappedBy = "staffLogs",cascade = CascadeType.ALL)
     private List<LogEntity> logs;
