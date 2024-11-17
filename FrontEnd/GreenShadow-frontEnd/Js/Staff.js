@@ -5,11 +5,12 @@ $(document).ready(function () {
     // Row click event to open modal and populate it with staff data
     $(document).on("click", ".staff-row", function () {
         const staffData = $(this).data("staff");
-        //populateModal(staffData);
+        populateModal(staffData);
         console.log(staffData)
         $("#staffDetailModal").modal("show");
     });
 });
+
 
 
 function toggleStaffEditMode() {
@@ -248,6 +249,47 @@ function fetchStaffData() {
         error: function (xhr) {
             console.error("Error fetching staff data:", xhr.responseText);
             alert("Failed to load staff data. Please try again.");
+        }
+    });
+}
+
+function populateModal(staff) {
+    // Set static fields
+    $("#staffName").text(`${staff.firstName} ${staff.lastName}`);
+    $("#firstName").val(staff.firstName || "");
+    $("#lastName").val(staff.lastName || "");
+    $("#email").val(staff.email || "");
+    $("#gender").val(staff.gender || "");
+    $("#contact").val(staff.contact || "");
+    $("#address").val(staff.address || "");
+    $("#dob").val(staff.dob || "");
+    $("#role").val(staff.role || "");
+    $("#designation").val(staff.designation || "");
+    $("#joinDate").val(staff.joinDate || "");
+   // $("#assignedVehicles").val(staff.assignedVehicles?.join(", ") || "");
+
+    // Fetch and set assigned fields
+    fetchAssignedFields(staff.staffId);
+}
+// Fetch assigned fields for the staff
+function fetchAssignedFields(staffId) {
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}/field`, // Replace with your endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (fields) {
+            if (fields.length === 0) {
+                $("#assignedFields").val("No assigned fields");
+            } else {
+                const fieldNames = fields.map(field => field.name).join(", ");
+                $("#assignedFields").val(fieldNames);
+            }
+        },
+        error: function (xhr) {
+            console.error("Error fetching assigned fields:", xhr.responseText);
+            alert("Failed to load assigned fields. Please try again.");
         }
     });
 }
