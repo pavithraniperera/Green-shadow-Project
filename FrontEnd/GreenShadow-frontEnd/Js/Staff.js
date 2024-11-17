@@ -1,3 +1,17 @@
+$(document).ready(function () {
+    // Fetch staff data on page load
+    fetchStaffData();
+
+    // Row click event to open modal and populate it with staff data
+    $(document).on("click", ".staff-row", function () {
+        const staffData = $(this).data("staff");
+        //populateModal(staffData);
+        console.log(staffData)
+        $("#staffDetailModal").modal("show");
+    });
+});
+
+
 function toggleStaffEditMode() {
     // Close the staffDetailModal
     $('#staffDetailModal').modal('hide');
@@ -30,13 +44,6 @@ document.getElementById('staffSearch').addEventListener('input', function () {
     });
 });
 
-document.querySelectorAll('.staff-table tbody tr').forEach(row => {
-    row.addEventListener('click', function() {
-
-        // Show the modal
-        $('#staffDetailModal').modal('show');
-    });
-});
 
 // Function to add an assigned field combo box
 function addField() {
@@ -199,3 +206,48 @@ $("#addStaffBtn").click(function (){
 
 
 })
+
+function fetchStaffData() {
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Replace with your backend GET endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            const tableBody = $(".staff-table tbody");
+            tableBody.empty(); // Clear existing rows
+
+            if (response.length > 0) {
+                $(".no-data").hide(); // Hide the no-data placeholder
+                $(".staff-table-container").show();
+
+                // Populate the table with staff data
+                response.forEach(staff => {
+                    const row = `
+                        <tr class="staff-row" style="cursor: pointer">
+                            <td>${staff.firstName}</td>
+                            <td>${staff.lastName}</td>
+                            <td>${staff.gender}</td>
+                            <td>${staff.joinDate}</td>
+                            <td>${staff.email}</td>
+                            <td>${staff.contact}</td>
+                            <td>${staff.designation}</td>
+                            <td>${staff.role}</td>
+                        </tr>
+                    `;
+                    const $row = $(row);
+                    $row.data("staff", staff); // Attach the staff object to the row
+                    tableBody.append($row);
+                });
+            } else {
+                $(".staff-table-container").hide(); // Hide the table
+                $(".no-data").show(); // Show the no-data placeholder
+            }
+        },
+        error: function (xhr) {
+            console.error("Error fetching staff data:", xhr.responseText);
+            alert("Failed to load staff data. Please try again.");
+        }
+    });
+}
