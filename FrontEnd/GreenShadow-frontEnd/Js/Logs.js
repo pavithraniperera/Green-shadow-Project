@@ -21,16 +21,30 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000); // Update every second
 
 // Function to add a new Field/Crop combo box
-function addFieldCrop() {
-    const container = document.getElementById("fieldsCropsContainer");
+function addFieldToLog() {
+    // Fetch existing options from the first dropdown
+    const existingOptions = $('.fieldForLog:first').html();
+    const container = document.getElementById("fieldsContainer");
     const newFieldCrop = document.createElement("div");
     newFieldCrop.className = "d-flex align-items-center mb-2";
     newFieldCrop.innerHTML = `
-        <select class="form-control mr-2" name="fieldsCrops[]" required>
-            <option value="">Select Field/Crop</option>
-            <option value="Field A">Field A</option>
-            <option value="Field B">Field B</option>
-            <!-- Add more options dynamically as needed -->
+        <select class="form-control mr-2 fieldForLog" name="fields[]" >
+          ${existingOptions || '<option value="">Select Field</option>'}
+        </select>
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeFieldCrop(this)">
+            <i class="fa-regular fa-trash-can"></i>
+        </button>
+    `;
+    container.appendChild(newFieldCrop);
+}
+function addCropToLog() {
+    const existingOptions = $('.cropForLog:first').html();
+    const container = document.getElementById("cropsContainer");
+    const newFieldCrop = document.createElement("div");
+    newFieldCrop.className = "d-flex align-items-center mb-2";
+    newFieldCrop.innerHTML = `
+        <select class="form-control mr-2 cropForLog" name="Crops[]" >
+           ${existingOptions || '<option value="">Select Crop</option>'}
         </select>
         <button type="button" class="btn btn-sm btn-danger" onclick="removeFieldCrop(this)">
             <i class="fa-regular fa-trash-can"></i>
@@ -39,7 +53,7 @@ function addFieldCrop() {
     container.appendChild(newFieldCrop);
 }
 // Function to preview the uploaded image
-function previewImage(event, previewId) {
+function previewLogImage(event, previewId) {
     const output = document.getElementById(previewId);
     output.src = URL.createObjectURL(event.target.files[0]);
     output.style.display = 'block';
@@ -53,15 +67,13 @@ function removeFieldCrop(element) {
 
 // Function to add a new Staff combo box
 function addStaff() {
+    const existingOptions = $('.staffForLog:first').html();
     const container = document.getElementById("staffContainer");
     const newStaff = document.createElement("div");
     newStaff.className = "d-flex align-items-center mb-2";
     newStaff.innerHTML = `
-        <select class="form-control mr-2" name="monitoringStaff[]" required>
-            <option value="">Select Staff Member</option>
-            <option value="John Doe">John Doe</option>
-            <option value="Jane Smith">Jane Smith</option>
-            <!-- Add more options dynamically as needed -->
+        <select class="form-control mr-2 staffForLog" name="monitoringStaff[]" required>
+          ${existingOptions || '<option value="">Select Staff</option>'}
         </select>
         <button type="button" class="btn btn-sm btn-danger" onclick="removeStaff(this)">
             <i class="fa-regular fa-trash-can"></i>
@@ -74,4 +86,6 @@ function addStaff() {
 function removeStaff(element) {
     element.parentNode.remove();
 }
+
+
 
