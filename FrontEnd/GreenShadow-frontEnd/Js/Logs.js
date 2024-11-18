@@ -31,7 +31,7 @@ function addFieldToLog() {
         <select class="form-control mr-2 fieldForLog" name="fields[]" >
           ${existingOptions || '<option value="">Select Field</option>'}
         </select>
-        <button type="button" class="btn btn-sm btn-danger" onclick="removeFieldCrop(this)">
+        <button type="button" class="btn btn-sm custom-btn" onclick="removeFieldCrop(this)">
             <i class="fa-regular fa-trash-can"></i>
         </button>
     `;
@@ -46,7 +46,7 @@ function addCropToLog() {
         <select class="form-control mr-2 cropForLog" name="Crops[]" >
            ${existingOptions || '<option value="">Select Crop</option>'}
         </select>
-        <button type="button" class="btn btn-sm btn-danger" onclick="removeFieldCrop(this)">
+        <button type="button" class="btn btn-sm custom-btn" onclick="removeFieldCrop(this)">
             <i class="fa-regular fa-trash-can"></i>
         </button>
     `;
@@ -66,16 +66,17 @@ function removeFieldCrop(element) {
 }
 
 // Function to add a new Staff combo box
-function addStaff() {
+function addStaffForLog() {
+
     const existingOptions = $('.staffForLog:first').html();
     const container = document.getElementById("staffContainer");
     const newStaff = document.createElement("div");
     newStaff.className = "d-flex align-items-center mb-2";
     newStaff.innerHTML = `
         <select class="form-control mr-2 staffForLog" name="monitoringStaff[]" required>
-          ${existingOptions || '<option value="">Select Staff</option>'}
+          ${existingOptions || '<option value="">Select Staff Member</option>'}
         </select>
-        <button type="button" class="btn btn-sm btn-danger" onclick="removeStaff(this)">
+        <button type="button" class="btn btn-sm  custom-btn" onclick="removeStaff(this)">
             <i class="fa-regular fa-trash-can"></i>
         </button>
     `;
@@ -86,6 +87,97 @@ function addStaff() {
 function removeStaff(element) {
     element.parentNode.remove();
 }
+
+function fetchFieldsForLog() {
+
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/fields", // Update with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            // Assuming response is an array of FieldDto objects
+            const fieldSelect = $(".fieldForLog");
+            fieldSelect.empty(); // Clear existing options
+            fieldSelect.append('<option value="">Select Field</option>'); // Add default option
+
+            // Populate the select element with field names and IDs
+            response.forEach(field => {
+                const option = `<option value="${field.fieldId}">${field.name}</option>`;
+                fieldSelect.append(option);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching fields:", error);
+            showAlert("Failed to load fields. Please try again later.",'error');
+        }
+    });
+}
+
+function fetchCropForLog() {
+
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/crops", // Update with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            // Assuming response is an array of FieldDto objects
+            const cropSelect = $(".cropForLog");
+            cropSelect.empty(); // Clear existing options
+            cropSelect.append('<option value="">Select Field</option>'); // Add default option
+
+            // Populate the select element with field names and IDs
+            response.forEach(crop => {
+                const option = `<option value="${crop.id}">${crop.commonName}</option>`;
+                cropSelect.append(option);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching crops:", error);
+            showAlert("Failed to load crops. Please try again later.",'error');
+        }
+    });
+
+}
+
+function fetchStaffForLog() {
+
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Update with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            // Assuming response is an array of FieldDto objects
+            const staffSelect = $("#monitoringStaff");
+            staffSelect.empty(); // Clear existing options
+            staffSelect.append('<option value="">Select Staff Member</option>'); // Add default option
+
+            // Populate the select element with field names and IDs
+            response.forEach(staff => {
+                const option = `<option value="${staff.staffId}">${staff.firstName}</option>`;
+                staffSelect.append(option);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching Staff:", error);
+            showAlert("Failed to load staff. Please try again later.",'error');
+        }
+    });
+}
+
+$("#openAddLogModal").click(function () {
+    $("#addMonitoringLogModal").modal('show')
+    fetchFieldsForLog();
+    fetchCropForLog();
+    fetchStaffForLog();
+})
+
+
 
 
 
