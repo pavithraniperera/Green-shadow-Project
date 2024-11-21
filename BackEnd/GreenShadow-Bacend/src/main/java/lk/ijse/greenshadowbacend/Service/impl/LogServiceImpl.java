@@ -4,23 +4,25 @@ import lk.ijse.greenshadowbacend.Dao.CropDao;
 import lk.ijse.greenshadowbacend.Dao.FieldDao;
 import lk.ijse.greenshadowbacend.Dao.LogDao;
 import lk.ijse.greenshadowbacend.Dao.StaffDao;
+import lk.ijse.greenshadowbacend.Dto.impl.CropDto;
+import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
 import lk.ijse.greenshadowbacend.Dto.impl.LogDto;
+import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Entity.CropEntity;
 import lk.ijse.greenshadowbacend.Entity.FieldEntity;
 import lk.ijse.greenshadowbacend.Entity.LogEntity;
 import lk.ijse.greenshadowbacend.Entity.StaffEntity;
+import lk.ijse.greenshadowbacend.Exception.LogNotFoundException;
 import lk.ijse.greenshadowbacend.Service.LogService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -212,5 +214,36 @@ public class LogServiceImpl implements LogService {
         log.getCropLogs().removeIf(crop -> !cropEntities.contains(crop));
     }
 
+    @Override
+    public Map<String, Object> getRelatedEntitiesAsDtos(String logId) {
+        Map<String, Object> relatedEntities = new HashMap<>();
+        List<FieldDto> fieldDtos = null;
+        List<CropDto> cropDtos=null;
+        List<StaffDto> staffDtos =null;
+        Optional<LogEntity> logEntity = logDao.findById(logId);
+        if (logEntity.isPresent()){
+            LogEntity log = logEntity.get();
+            // Convert PersistentSet to List
+            List<FieldEntity> fieldEntities = new ArrayList<>(log.getFieldLogs());
+            List<CropEntity> cropEntities = new ArrayList<>(log.getCropLogs());
+            List<StaffEntity> staffEntities = new ArrayList<>(log.getStaffLogs());
+            if (!fieldEntities.isEmpty()){
+                 fieldDtos =  logMapping.asFieldDtoList(fieldEntities);
+            }
+            if ((!cropEntities.isEmpty())){
+                 cropDtos = logMapping.asCropDtoList( cropEntities);
+            }
+            if (!staffEntities.isEmpty()){
+                staffDtos = logMapping.asStaffDtoList( staffEntities);
+            }
+
+        }
+        relatedEntities.put("fields", fieldDtos);
+        relatedEntities.put("crops", cropDtos);
+        relatedEntities.put("staff", staffDtos);
+
+       return relatedEntities;
+
+    }
 }
 

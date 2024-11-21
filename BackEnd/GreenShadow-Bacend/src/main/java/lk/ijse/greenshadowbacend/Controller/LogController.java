@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/logs")
@@ -100,7 +101,7 @@ public class LogController {
     }
 
     @GetMapping(value = "/{logId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getFieldById(@PathVariable("logId") String fieldId) {
+    public ResponseEntity<?> getLogById(@PathVariable("logId") String fieldId) {
         // Validate field ID format using RegexUtilForId
         if (!RegexUtilForId.isValidLogId(fieldId)) {
             return new ResponseEntity<>( "Log ID format is invalid", HttpStatus.BAD_REQUEST);
@@ -113,6 +114,12 @@ public class LogController {
         }
 
         return new ResponseEntity<>(logDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{logId}/related-entities")
+    public ResponseEntity<Map<String, Object>> getRelatedEntities(@PathVariable String logId) {
+        Map<String, Object> relatedEntities = logService.getRelatedEntitiesAsDtos(logId);
+        return ResponseEntity.ok(relatedEntities);
     }
 
 }
