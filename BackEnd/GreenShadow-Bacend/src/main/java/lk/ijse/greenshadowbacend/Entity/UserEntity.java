@@ -1,5 +1,6 @@
 package lk.ijse.greenshadowbacend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+
 public class UserEntity implements UserDetails {
     @Id
     private String userId;
@@ -35,6 +36,35 @@ public class UserEntity implements UserDetails {
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
         return authorities;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public StaffEntity getStaff() {
+        return staff;
+    }
+
+    public void setStaff(StaffEntity staff) {
+        this.staff = staff;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
     @Override

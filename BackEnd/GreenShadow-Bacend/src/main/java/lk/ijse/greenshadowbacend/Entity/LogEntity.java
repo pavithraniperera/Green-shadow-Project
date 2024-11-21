@@ -20,6 +20,7 @@ public class LogEntity {
     private String logId;
     private String logDetails;
     private Date date;
+    private String status;
     @Column(columnDefinition = "LONGTEXT")
     private String image2;
 
