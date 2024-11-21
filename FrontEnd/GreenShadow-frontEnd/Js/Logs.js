@@ -177,6 +177,86 @@ $("#openAddLogModal").click(function () {
     fetchStaffForLog();
 })
 
+function clearForm() {
+    $("#addMonitoringLogForm")[0].reset();
+    $("#logPreview").hide().attr("src", "");
+    $("#fieldsContainer").empty();
+    $("#cropsContainer").empty();
+    $("#staffContainer").empty();
+}
+
+function saveLog() {
+    // Collect form data
+    const logDescription = $("#logDescription").val();
+    const fields = $(".fieldForLog").map(function () {
+        return $(this).val();
+    }).get()
+        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+    const crops = $(".cropForLog").map(function () {
+        return $(this).val();
+    }).get()
+        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+    const staff = $(".staffForLog").map(function () {
+        return $(this).val();
+    }).get()
+        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+    const logStatus = $("#logStatus").val();
+    const imageFile = $("#logImage")[0].files[0]; // Get the selected image file
+
+    // Create the log data object
+    const logData = {
+        logDetails: logDescription,
+        date:new Date(),
+        status: logStatus
+    };
+    // Conditionally add fields if not empty
+    if (fields.length > 0) {
+        logData.fieldIds = fields;
+    }
+
+    // Conditionally add crops if not empty
+    if (crops.length > 0) {
+        logData.cropIds = crops;
+    }
+
+    // Conditionally add monitoringStaff if not empty
+    if (staff.length > 0) {
+        logData.staffIds = staff;
+    }
+   console.log(logData)
+    // Create FormData to send multipart data
+    const formData = new FormData();
+    formData.append("logData", JSON.stringify(logData)); // Convert logData to JSON string
+    if (imageFile) {
+        formData.append("imageFile", imageFile); // Append the image file
+    }
+    // Perform AJAX request
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/logs", // Replace with your endpoint
+        type: "POST",
+        data: formData,
+        processData: false, // Prevent jQuery from processing the data
+        contentType: false, // Set the content type to false for FormData
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+        },
+        success: function (response) {
+            showAlert("Log saved successfully!",'success');
+            console.log(response); // Debug: Check the response from the server
+            // Optionally, clear the form or refresh the UI
+            clearForm();
+        },
+        error: function (xhr, status, error) {
+            showAlert("Failed to save the log. Please try again.",'error');
+            console.error(error); // Debug: Check for errors
+        }
+    });
+}
+// Call this function on the Save button click
+$("#saveLogBtn").on("click", saveLog);
+
+
+
 
 
 
