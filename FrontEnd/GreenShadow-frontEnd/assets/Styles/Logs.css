@@ -111,8 +111,25 @@
     display: flex;
     flex-wrap: wrap; /* Allows wrapping to the next row */
     gap: 35px; /* Space between cards */
-    justify-content: space-between; /* Spacing between cards in the row */
+    justify-content: space-around; /* Spacing between cards in the row */
 }
+.modal-header h4{
+    margin-top: 15px;
+}
+    .log-image-container{
+        position: relative;
+        width: 90%;
+        margin: 0 auto;
+        height: 250px;
+    }
+    .log-image-container img{
+        width: 100%;
+        margin: 5px auto;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+
+    }
 #currentDateTime {
     margin-left: 50px;
     font-size: 0.9rem;
