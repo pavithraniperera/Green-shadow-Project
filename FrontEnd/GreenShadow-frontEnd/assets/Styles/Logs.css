@@ -4,7 +4,7 @@
     flex: 1 1 calc(50% - 10px); /* Each card takes 50% of the container width minus the gap */
     position: relative;
     width: 100%;
-    max-width: 400px;
+    max-width: 360px;
     padding: 15px 20px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.1);
@@ -12,7 +12,7 @@
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     color: #333;
     font-family: Arial, sans-serif;
-    margin: 20px 0;
+    margin: 10px 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
