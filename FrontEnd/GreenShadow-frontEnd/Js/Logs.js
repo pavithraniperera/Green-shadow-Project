@@ -1,3 +1,9 @@
+$(document).ready(function () {
+    // Fetch staff data on page load
+    fetchLogs();
+
+});
+
 function enableEditMode() {
     $('#logDetailModal').modal('hide');
 
@@ -245,6 +251,8 @@ function saveLog() {
             console.log(response); // Debug: Check the response from the server
             // Optionally, clear the form or refresh the UI
             clearForm();
+            $("#addMonitoringLogModal").modal("hide")
+            fetchLogs()
         },
         error: function (xhr, status, error) {
             showAlert("Failed to save the log. Please try again.",'error');
@@ -254,6 +262,126 @@ function saveLog() {
 }
 // Call this function on the Save button click
 $("#saveLogBtn").on("click", saveLog);
+
+function fetchLogs() {
+    $.ajax({
+        url: 'http://localhost:8080/greenShadow/api/v1/logs',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function (logs) {
+            addLogsToUI(logs);
+        },
+        error: function (error) {
+            console.error("Error fetching fields:", error);
+            $(".no-data").show();
+        }
+    });
+}
+
+function addLogsToUI(logs){
+    const container = $(".log-card-container");
+    const noDataMessage = $(".no-data");
+
+    // Clear any existing content
+    container.empty();
+    if (logs && logs.length > 0) {
+        noDataMessage.hide(); // Hide no-data message if logs exist
+
+        logs.forEach(log => {
+
+            const logCard = `
+                        <div class="log-card" data-log-Id =${log.logId}>
+                            <!-- Date and Time -->
+                            <div class="log-date-time">
+                                <span>${new Date(log.date).toLocaleDateString()}</span>
+                             
+                            </div>
+
+                            <!-- Field/Crop and Status Section -->
+                            <div class="log-header">
+                                <div class="log-category">.....</div>
+                                <div class="log-status ${log.status.toLowerCase()}">${log.status}</div>
+                            </div>
+
+                            <!-- Description and Image Section -->
+                            <div class="log-middle">
+                                <!-- Description on the left -->
+                                <div class="log-description">
+                                    ${log.logDetails || "No description available"}
+                                </div>
+                                <!-- Image on the right -->
+                                <div class="log-image">
+                                    ${log.image2
+                    ? `<img src="data:image/png;base64,${log.image2}" alt="Log Image" />`
+                    : `<img src="https://via.placeholder.com/80" alt="No Image Available" />`
+            }
+                                </div>
+                            </div>
+
+                            <!-- View Details Button -->
+                            <button class="view-details-btn" data-toggle="modal" data-target="#logDetailModal" onclick="viewLogDetails(${log.id})">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </button>
+                        </div>
+                    `;
+            container.append(logCard);
+            fetchFieldsAndCrops(log.logId)
+        });
+    } else {
+        noDataMessage.show(); // Show no-data message if no logs exist
+    }
+}
+
+function fetchFieldsAndCrops(logId) {
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}/related-entities`,
+        method: 'GET',
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+        },
+        success: function (data) {
+            // Select the log card using the unique logId
+            const logCard = $(`.log-card[data-log-id="${logId}"]`);
+            // Extract field and crop names
+            const fieldNames = (data.fields && data.fields.length > 0)
+                ? data.fields.map(field => field.name).join(", ")
+                : null; // No Fields
+
+            const cropNames = (data.crops && data.crops.length > 0)
+                ? data.crops.map(crop => crop.commonName).join(", ")
+                : null; // No Crops
+
+            // Construct the display text
+            let displayText = "";
+
+            if (fieldNames && cropNames) {
+                // Both fields and crops exist
+                displayText = `${fieldNames}, ${cropNames} Crop`;
+            } else if (fieldNames) {
+                // Only fields exist
+                displayText = fieldNames;
+            } else if (cropNames) {
+                // Only crops exist
+                displayText = cropNames;
+            } else {
+                // Neither fields nor crops exist
+                displayText = "No Data Available";
+            }
+
+            // Update the log card's category text
+            logCard.find('.log-category').text(displayText);
+        },
+        error: function (xhr, status, error) {
+            console.error(`Failed to fetch related entities for log ${logId}:`, error);
+            logCard.find('.log-category').text("Error fetching data");
+        }
+    });
+}
+
+
+
 
 
 
