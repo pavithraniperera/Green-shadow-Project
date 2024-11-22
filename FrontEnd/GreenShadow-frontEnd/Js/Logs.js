@@ -317,24 +317,79 @@ function addLogsToUI(logs){
                     ? `<img src="data:image/png;base64,${log.image2}" alt="Log Image" />`
                     : `<img src="https://via.placeholder.com/80" alt="No Image Available" />`
             }
-                                </div>
+                          </div>
                             </div>
 
                             <!-- View Details Button -->
-                            <button class="view-details-btn" data-toggle="modal" data-target="#logDetailModal" onclick="viewLogDetails(${log.id})">
+                            <button class="view-details-btn" data-toggle="modal" data-target="#logDetailModal"   data-log='${JSON.stringify(log)}' 
+                        onclick="viewLogDetails(this)">
                                 <i class="fas fa-info-circle"></i> View Details
                             </button>
                         </div>
                     `;
             container.append(logCard);
-            fetchFieldsAndCrops(log.logId)
+            fetchFieldsAndCropsToUI(log.logId)
         });
     } else {
         noDataMessage.show(); // Show no-data message if no logs exist
     }
 }
 
-function fetchFieldsAndCrops(logId) {
+
+function viewLogDetails(button) {
+
+    // Parse crop data from the button's data attribute
+    const logDetail = JSON.parse($(button).attr('data-log'));
+    console.log(logDetail)
+    const imageSrc = logDetail.image2
+        ? `data:image/jpeg;base64,${logDetail.image2}`
+        : 'https://via.placeholder.com/600x200?text=Log+Image';
+    $("#logDetailModal .modal-header img").attr("src", imageSrc)
+    // Set the log code
+    $("#logCode").val(logDetail.logId || "N/A");
+
+    // Set the log date
+    $("#logDate").val(logDetail.date || "N/A");
+
+    // Set the log details
+    $("#details").val(logDetail.logDetails || "No details available");
+
+    //fetch related entities
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logDetail.logId}/related-entities`,
+        method: 'GET',
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+        },
+        success: function (data) {
+            // Set the fields and crops
+            const fieldNames = (data.fields && data.fields.length > 0)
+                ? data.fields.map(field => field.name).join(", ")
+                : "No Fields";
+            const cropNames = (data.crops && data.crops.length > 0)
+                ? data.crops.map(crop => crop.commonName).join(", ")
+                : "No Crops";
+            const fieldsAndCrops = [fieldNames, cropNames].filter(name => name !== "No Fields" && name !== "No Crops").join(", ");
+            $("#fields").val(fieldsAndCrops || "No data available");
+            // Set the staff members
+            const staffNames = (data.staff && data.staff.length > 0)
+                ? data.staff.map(staff => staff.firstName).join(", ")
+                : "No Staff";
+            $("#staffMembers").val(staffNames || "No data available");
+        },
+        error: function (xhr, status, error) {
+            console.error(`Failed to fetch related entities for log ${logId}:`, error);
+
+        }
+    });
+
+
+
+
+}
+
+
+function fetchFieldsAndCropsToUI(logId) {
     $.ajax({
         url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}/related-entities`,
         method: 'GET',
