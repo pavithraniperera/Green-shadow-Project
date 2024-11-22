@@ -4,6 +4,168 @@ $(document).ready(function () {
 
 });
 
+function updateLogData(logId) {
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Adjust URL as necessary
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        success: function(response) {
+            // Call function to populate the modal with the field data
+            console.log(response)
+            PopulateLogModal(response);
+        },
+        error: function() {
+            console.log('Error retrieving Log data.');
+        }
+    });
+}
+
+function  PopulateLogModal(log){
+    fetchFieldsForLog()
+    fetchCropForLog()
+    fetchStaffForLog()
+    // Populate Log Description
+    $("#logDescription").val(log.logDetails || "");
+    // Populate Status
+    $("#logStatus").val(log.status || "Info");
+
+    // Set the image preview
+    const imageSrc = log.image2
+        ? `data:image/jpeg;base64,${log.image2}`
+        : 'https://via.placeholder.com/600x200?text=No+Image';
+    $('#logPreview').attr('src', imageSrc).show(); // Set and show the image preview
+    // Populate assigned fields dynamically
+    populateAssignedData(log.logId);
+
+}
+
+function setField(fields) {
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/fields`, // Fetch all fields
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (allFields) {
+            const fieldsContainer = $("#fieldsContainer");
+            fieldsContainer.empty();
+            fields.forEach(assignedField => {
+                const fieldElement = `
+                                <div class="d-flex align-items-center mb-2">
+                                    <select class="form-control glass-input mr-2 fieldForLog" name="assignedFields[]">
+                                        ${allFields.map(field => `
+                                            <option value="${field.fieldId}" ${field.fieldId === assignedField.fieldId ? "selected" : ""}>
+                                                ${field.name}
+                                            </option>
+                                        `).join("")}
+                                    </select>
+                                    <button type="button" class="btn btn-sm custom-btn" onclick="removeFieldCrop(this)">
+                                        <i class="fa-regular fa-trash-can" style="color:green"></i>
+                                    </button>
+                                </div>`;
+                fieldsContainer.append(fieldElement);
+            });
+
+        },
+        error: function () {
+            alert("Failed to load all fields. Please try again.");
+        }
+    });
+}
+
+
+function setCrop(crops) {
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/crops`, // Fetch all fields
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (allCrops) {
+            const cropsContainer = $("#cropsContainer");
+            cropsContainer.empty();
+            crops.forEach(assignedCrop => {
+                const cropElement = `
+                                <div class="d-flex align-items-center mb-2">
+                                    <select class="form-control glass-input mr-2 cropForLog" name="assignedFields[]">
+                                        ${allCrops.map(crop => `
+                                            <option value="${crop.id}" ${crop.id === assignedCrop.id ? "selected" : ""}>
+                                                ${crop.commonName}
+                                            </option>
+                                        `).join("")}
+                                    </select>
+                                    <button type="button" class="btn btn-sm custom-btn" onclick="removeFieldCrop(this)">
+                                        <i class="fa-regular fa-trash-can" style="color:green"></i>
+                                    </button>
+                                </div>`;
+                cropsContainer.append(cropElement);
+            });
+
+        },
+        error: function () {
+            alert("Failed to load all Crops. Please try again.");
+        }
+    });
+
+}
+function setStaff(staff) {
+    console.log(staff)
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/staffs`, // Fetch all fields
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (allStaff) {
+            const staffContainer = $("#staffContainer");
+            staffContainer.empty();
+            staff.forEach(assignedStaff => {
+                const cropElement = `
+                                <div class="d-flex align-items-center mb-2">
+                                    <select class="form-control glass-input mr-2 staffForLog" name="assignedFields[]">
+                                        ${allStaff.map(s => `
+                                            <option value="${s.StaffId}" ${s.StaffId === assignedStaff.staffId ? "selected" : ""}>
+                                                ${s.firstName}
+                                            </option>
+                                        `).join("")}
+                                    </select>
+                                    <button type="button" class="btn btn-sm custom-btn" onclick="removeStaff(this)">
+                                        <i class="fa-regular fa-trash-can" style="color:green"></i>
+                                    </button>
+                                </div>`;
+                staffContainer.append(cropElement);
+            });
+
+        },
+        error: function () {
+            alert("Failed to load all staff. Please try again.");
+        }
+    });
+}
+
+function populateAssignedData(logId){
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}/related-entities`, // Fetch assigned fields
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (relatedEntities) {
+            if (relatedEntities.fields && relatedEntities.fields.length > 0){ setField(relatedEntities.fields)}
+            if (relatedEntities.crops && relatedEntities.crops.length > 0){ setCrop(relatedEntities.crops)}
+            if (relatedEntities.staff && relatedEntities.staff.length > 0){ setStaff(relatedEntities.staff)}
+
+
+
+        },
+        error: function () {
+            alert("Failed to load assigned fields for the staff. Please try again.");
+        }
+    });
+}
+
 function enableEditMode() {
     $('#logDetailModal').modal('hide');
 
@@ -11,13 +173,86 @@ function enableEditMode() {
     $('#addMonitoringLogModal').modal('show');
 
     // Change the modal header to "Update Member"
-    document.getElementById('addMonitoringLogModalLabel').innerText = 'Update Lod Details';
+    document.getElementById('addMonitoringLogModalLabel').innerText = 'Update Log Details';
 
-    // Change the button text from "Add Staff" to "Save Changes"
-    const addStaffBtn = document.getElementById('saveLogBtn');
-    addStaffBtn.innerText = 'Save Changes';
+
+    // Hide the "Add Field" button
+    document.getElementById("saveLogBtn").style.display = "none";
+    // Show the "Save Changes" button
+    document.getElementById("logSaveBtn").style.display = "inline-block";
+    updateLogData(logId)
 
 }
+$("#logSaveBtn").click(function () {
+    const logDescription = $("#logDescription").val();
+    const fields = $(".fieldForLog").map(function () {
+        return $(this).val();
+    }).get()
+        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+    const crops = $(".cropForLog").map(function () {
+        return $(this).val();
+    }).get()
+        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+    const staff = $(".staffForLog").map(function () {
+        return $(this).val();
+    }).get()
+        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+    const logStatus = $("#logStatus").val();
+    const imageFile = $("#logImage")[0].files[0]; // Get the selected image file
+
+    // Create the log data object
+    const logData = {
+        logDetails: logDescription,
+        date:new Date(),
+        status: logStatus
+    };
+    // Conditionally add fields if not empty
+    if (fields.length > 0) {
+        logData.fieldIds = fields;
+    }
+
+    // Conditionally add crops if not empty
+    if (crops.length > 0) {
+        logData.cropIds = crops;
+    }
+
+    // Conditionally add monitoringStaff if not empty
+    if (staff.length > 0) {
+        logData.staffIds = staff;
+    }
+    console.log(logData)
+    // Create FormData to send multipart data
+    const formData = new FormData();
+    formData.append("logData", JSON.stringify(logData)); // Convert logData to JSON string
+    if (imageFile) {
+        formData.append("imageFile", imageFile); // Append the image file
+    }
+    // Perform AJAX request
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Replace with your endpoint
+        type: "PUT",
+        data: formData,
+        processData: false, // Prevent jQuery from processing the data
+        contentType: false, // Set the content type to false for FormData
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+        },
+        success: function (response) {
+            showAlert("Log Update successfully!",'success');
+            console.log(response); // Debug: Check the response from the server
+            // Optionally, clear the form or refresh the UI
+            clearForm();
+            $("#addMonitoringLogModal").modal("hide")
+            fetchLogs()
+        },
+        error: function (xhr, status, error) {
+            showAlert("Failed to Update the log. Please try again.",'error');
+            console.error(error); // Debug: Check for errors
+        }
+    });
+
+})
+
 // Function to update the date and time in real-time
 function updateDateTime() {
     const now = new Date();
@@ -94,7 +329,7 @@ function removeStaff(element) {
     element.parentNode.remove();
 }
 
-function fetchFieldsForLog() {
+function fetchFieldsForLog(assignedFields) {
 
     $.ajax({
         url: "http://localhost:8080/greenShadow/api/v1/fields", // Update with your actual endpoint
@@ -102,15 +337,16 @@ function fetchFieldsForLog() {
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
-        success: function (response) {
+        success: function (fields) {
             // Assuming response is an array of FieldDto objects
             const fieldSelect = $(".fieldForLog");
-            fieldSelect.empty(); // Clear existing options
-            fieldSelect.append('<option value="">Select Field</option>'); // Add default option
+            fieldSelect.empty();
+            fieldSelect.append('<option value="">Select Field</option>'); // Default option
 
-            // Populate the select element with field names and IDs
-            response.forEach(field => {
-                const option = `<option value="${field.fieldId}">${field.name}</option>`;
+            // Populate the select element with fetched fields and pre-select assigned ones
+            fields.forEach(field => {
+                const isSelected = assignedFields && assignedFields.some(f => f.fieldId === field.fieldId);
+                const option = `<option value="${field.fieldId}" ${isSelected ? "selected" : ""}>${field.name}</option>`;
                 fieldSelect.append(option);
             });
         },
@@ -121,7 +357,7 @@ function fetchFieldsForLog() {
     });
 }
 
-function fetchCropForLog() {
+function fetchCropForLog(assignedCrops) {
 
     $.ajax({
         url: "http://localhost:8080/greenShadow/api/v1/crops", // Update with your actual endpoint
@@ -129,15 +365,16 @@ function fetchCropForLog() {
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
-        success: function (response) {
+        success: function (crops) {
             // Assuming response is an array of FieldDto objects
             const cropSelect = $(".cropForLog");
-            cropSelect.empty(); // Clear existing options
-            cropSelect.append('<option value="">Select Field</option>'); // Add default option
+            cropSelect.empty();
+            cropSelect.append('<option value="">Select Crop</option>'); // Default option
 
-            // Populate the select element with field names and IDs
-            response.forEach(crop => {
-                const option = `<option value="${crop.id}">${crop.commonName}</option>`;
+            // Populate the select element with fetched crops and pre-select assigned ones
+            crops.forEach(crop => {
+                const isSelected = assignedCrops && assignedCrops.some(c => c.cropId === crop.cropId);
+                const option = `<option value="${crop.cropId}" ${isSelected ? "selected" : ""}>${crop.commonName}</option>`;
                 cropSelect.append(option);
             });
         },
@@ -149,7 +386,7 @@ function fetchCropForLog() {
 
 }
 
-function fetchStaffForLog() {
+function fetchStaffForLog(assignedStaff) {
 
     $.ajax({
         url: "http://localhost:8080/greenShadow/api/v1/staffs", // Update with your actual endpoint
@@ -157,15 +394,16 @@ function fetchStaffForLog() {
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
-        success: function (response) {
+        success: function (staffList) {
             // Assuming response is an array of FieldDto objects
             const staffSelect = $("#monitoringStaff");
-            staffSelect.empty(); // Clear existing options
-            staffSelect.append('<option value="">Select Staff Member</option>'); // Add default option
+            staffSelect.empty();
+            staffSelect.append('<option value="">Select Staff</option>'); // Default option
 
-            // Populate the select element with field names and IDs
-            response.forEach(staff => {
-                const option = `<option value="${staff.staffId}">${staff.firstName}</option>`;
+            // Populate the select element with fetched staff and pre-select assigned ones
+            staffList.forEach(staff => {
+                const isSelected = assignedStaff && assignedStaff.some(s => s.staffId === staff.staffId);
+                const option = `<option value="${staff.staffId}" ${isSelected ? "selected" : ""}>${staff.firstName}</option>`;
                 staffSelect.append(option);
             });
         },
@@ -335,12 +573,14 @@ function addLogsToUI(logs){
     }
 }
 
+var logId;
 
 function viewLogDetails(button) {
 
     // Parse crop data from the button's data attribute
     const logDetail = JSON.parse($(button).attr('data-log'));
     console.log(logDetail)
+    logId = logDetail.logId;
     const imageSrc = logDetail.image2
         ? `data:image/jpeg;base64,${logDetail.image2}`
         : 'https://via.placeholder.com/600x200?text=Log+Image';
