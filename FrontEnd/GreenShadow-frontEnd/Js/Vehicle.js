@@ -53,26 +53,9 @@ function toggleVehicleEditMode() {
 
 
 }
-function addStaff() {
-    const existingOptions = $('.staffForVehicle:first').html();
-    const container = document.getElementById("assignedStaffContainer");
-    const staffDiv = document.createElement("div");
-    staffDiv.className = "d-flex align-items-center mb-2";
-    staffDiv.innerHTML = `
-        <select class="form-control glass-input mr-2 staffForVehicle" name="assignedStaff[]" required>
-            ${existingOptions || '<option value="">Select Staff Member</option>'}
-        </select>
-        <button type="button" class="btn btn-sm custom-btn" onclick="removeStaff(this)">
-            <i class="fa-regular fa-trash-can" style="color: green"></i>
-        </button>
-    `;
-    container.appendChild(staffDiv);
 
-}
 
-function removeStaff(button) {
-    button.parentElement.remove();
-}
+
 
 function clearVehicleForm() {
     document.getElementById("addVehicleForm").reset();
@@ -108,5 +91,50 @@ function fetchStaffForVehicle(){
 $("#addVehicle").click(function () {
     fetchStaffForVehicle()
 })
+function saveVehicle() {
+
+    const vehicleData = {
+        plateNumber: $("#licensePlateModal").val(),
+        category:$("#categoryModal").val(),
+        fuelType: $("#fuelTypeModal").val(),
+        status: $("#statusModal").val(),
+        remarks: $("#remarksModal").val(),
+        staffId:$(".staffForVehicle").val()
+    };
+
+    // Validate required fields
+    if (!vehicleData.plateNumber || !vehicleData.fuelType || !vehicleData.status ) {
+        alert("Please fill out all required fields.");
+        return;
+    }
+
+    console.log(vehicleData)
+
+    // AJAX POST request to save the vehicle
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/vehicles", // Update with your actual endpoint URL
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(vehicleData),
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            showAlert("Vehicle added successfully!",'success');
+            // Close the modal
+            $("#addVehicleModal").modal("hide");
+            // Optionally refresh the vehicle list or perform other UI updates
+           // fetchVehicles(); // Define a function to refresh vehicle data
+        },
+        error: function (xhr, status, error) {
+            console.error("Error saving vehicle:", error);
+            showAlert("Failed to add vehicle. Please try again.",'error');
+        }
+    });
+}
+
+// Attach the function to the Add Vehicle button
+$("#addVehicleBtn").on("click", saveVehicle);
+
 
 
