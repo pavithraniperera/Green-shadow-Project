@@ -73,6 +73,7 @@ public class LogController {
 
                 return ResponseEntity.status(HttpStatus.OK).body("Log updated successfully");
             } catch (Exception e) {
+                e.printStackTrace();
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating Log: " + e.getMessage());
             }
         }

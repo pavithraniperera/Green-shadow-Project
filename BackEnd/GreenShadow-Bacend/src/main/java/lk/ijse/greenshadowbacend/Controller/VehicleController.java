@@ -24,8 +24,9 @@ public class VehicleController {
     // Save Vehicle
     @PostMapping
     public ResponseEntity<VehicleDto> saveVehicle(@RequestBody VehicleDto vehicleDto) {
+        System.out.println(vehicleDto);
         VehicleDto savedVehicle = vehicleService.save(vehicleDto);
-        return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedVehicle);
     }
     // Update Vehicle
     @PutMapping("/{vehicleId}")
@@ -34,7 +35,7 @@ public class VehicleController {
         return new ResponseEntity<>(updatedVehicle, HttpStatus.OK);
     }
     @DeleteMapping("/{vehicleId}")
-    public ResponseEntity<String> deleteStaff(@PathVariable("vehicleId") String vehicleId) {
+    public ResponseEntity<String> deleteVehicle(@PathVariable("vehicleId") String vehicleId) {
         try{
             if (!RegexUtilForId.isValidVehicleId(vehicleId)){
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
