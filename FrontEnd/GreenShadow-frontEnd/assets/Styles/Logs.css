@@ -130,6 +130,15 @@
         border-radius: 10px;
 
     }
+    .date-picker input {
+      margin-bottom: 15px;
+    }
+    .date-picker i{
+        top: 35%;
+    }
+    #showAllButton {
+     width: 300px;
+    }
 #currentDateTime {
     margin-left: 50px;
     font-size: 0.9rem;
