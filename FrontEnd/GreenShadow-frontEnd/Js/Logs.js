@@ -717,6 +717,45 @@ $("#logDeleteBtn").click(function () {
     });
 
 });
+ $("#lDate").on("keypress", function (e) {
+    if (e.which === 13) {
+        fetchFilteredLogs();
+    }
+});
+function fetchFilteredLogs() {
+
+    const selectedDate = $("#lDate").val(); // Date in YYYY-MM-DD format
+
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/logs",
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (logs) {
+            // Filter logs based on the selected date
+            const filteredLogs = logs.filter(log => log.date === selectedDate);
+
+            if (filteredLogs.length > 0) {
+
+                // Call fetchLogToUi for the filtered logs
+                addLogsToUI(filteredLogs);
+                document.getElementById("showAllButton").style.display = "inline-block";
+            } else {
+               addLogsToUI(logs)
+
+                showAlert("No logs found for the selected date",'error')
+            }
+        },
+        error: function () {
+            alert("Failed to load logs. Please try again.");
+        }
+    });
+}
+$("#showAllButton").click(function (){
+   fetchLogs()
+    document.getElementById("showAllButton").style.display = "none";
+})
 
 
 
