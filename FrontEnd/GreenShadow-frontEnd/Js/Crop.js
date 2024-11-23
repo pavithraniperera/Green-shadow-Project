@@ -52,7 +52,7 @@ function populateCropModal(cropData) {
     if (cropData.fieldId) {
         console.log(cropData.fieldId)
         // Select the field option based on fieldId
-        $('#fieldSelect').val(cropData.fieldId).trigger('change');
+        $('#fieldSelect').val(cropData.fieldId);
         // This selects the option by value
     }
 
