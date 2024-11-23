@@ -35,7 +35,7 @@ public class StaffEntity {
 
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "staff_fields_detail",
             joinColumns = @JoinColumn(name = "staff_id"),

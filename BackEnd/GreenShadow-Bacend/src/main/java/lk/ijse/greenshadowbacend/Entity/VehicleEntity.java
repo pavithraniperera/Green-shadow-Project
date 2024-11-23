@@ -18,7 +18,7 @@ public class VehicleEntity {
     private String fuelType;
     private String status;
     private String remarks;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "staff_id")
     private StaffEntity staff;
 
