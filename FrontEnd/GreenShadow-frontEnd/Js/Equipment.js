@@ -353,7 +353,47 @@ $("#equipSaveBtn").click(function (){
     });
 })
 
+$("#deleteEquipmentBtn").click(function () {
+    const equipId = $("#equipmentId").val(); // Assuming a hidden input or other source for field ID.
 
+    if (!equipId) {
+        alert("Staff ID is missing! Cannot delete the Staff.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
+        return;
+    }
+
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipId}`, // Your delete endpoint
+        type: "DELETE",
+        headers: {
+            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+        },
+        success: function (response) {
+            // Perform actions on successful deletion
+            showAlert("Equipment deleted successfully.", "success");
+            $("#equipmentDetailModal").modal("hide"); // Hide the modal
+
+            fetchEquipmentData()
+            fetchLogs()
+            fetchVehicleData()
+        },
+        error: function (xhr, status, error) {
+            // Handle errors
+            if (xhr.status === 404) {
+                showAlert("member not found.", "error");
+            } else if (xhr.status === 400) {
+                showAlert("Invalid member ID.", "error");
+            } else {
+                showAlert("Error deleting Equipment. Please try again.", "error");
+            }
+        }
+    });
+
+});
 
 
 
