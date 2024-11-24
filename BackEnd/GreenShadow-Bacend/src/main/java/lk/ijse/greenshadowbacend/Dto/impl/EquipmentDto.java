@@ -15,4 +15,5 @@ public class EquipmentDto implements EquipmentStatus {
     private String status;
     private String fieldId;
     private String staffId;
+    private String remarks;
 }

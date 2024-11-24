@@ -16,12 +16,13 @@ public class EquipmentEntity {
     private String type;
     private String name;
     private String status;
+    private String remarks;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "field_id")
     private FieldEntity field;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "staff_id")
     private StaffEntity staff;
 }
