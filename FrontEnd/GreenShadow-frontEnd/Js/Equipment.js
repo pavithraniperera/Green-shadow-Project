@@ -242,8 +242,32 @@ function getStaff(staffId) {
     return staffName;
 }
 function   populateEquipModal(equipData){
+    // Populate Equipment ID
+    $("#equipmentId").val(equipData.equipmentId || "N/A");
+
+    // Populate Equipment Name
+    $("#equipmentName").val(equipData.name || "N/A");
+
+    // Populate Equipment Type
+    $("#equipmentType").val(equipData.type || "N/A");
+
+    // Populate Equipment Status
+    $("#equipmentStatus").val(equipData.status || "N/A");
+
+    // Fetch and populate Assigned Staff Name
+    const staffName = equipData.staffId ? getStaff(equipData.staffId) : "N/A";
+    $("#EqAssignedStaff").val(staffName);
+
+    // Fetch and populate Assigned Field Name
+    const fieldName = equipData.fieldId ? getField(equipData.fieldId) : "N/A";
+    $("#assignedField").val(fieldName);
+
+    // Populate Remarks
+    $("#equipmentRemarks").val(equipData.remarks || "N/A");
 
 }
+
+
 
 
 
