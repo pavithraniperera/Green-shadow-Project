@@ -99,11 +99,6 @@ $(document).ready(function() { // This function runs when the document is ready
         $("#signUp-section").css(css1);
     });
 
-   /* $("#login-signIn").click(function () {
-
-    });*/
-
-    // Sign-Up
 
     $('#signUpBtn').click(function () {
         const email = $('#signUp-email').val();
@@ -122,6 +117,7 @@ $(document).ready(function() { // This function runs when the document is ready
                 showAlert("Sign-up successful!","success");
                 $("#login-section").css(css2);
                 $("#signUp-section").css(css1);
+
             },
             error: function () {
                 showAlert("Sign-up failed. Please try again.","error");
@@ -145,6 +141,7 @@ $(document).ready(function() { // This function runs when the document is ready
                 localStorage.setItem('token', response.token);
                 localStorage.setItem('email',email)
                 showAlert("Sign-in successful!",'success');
+                fetchProfileData()
                 $("#login-section").css(css1);
                 $("#signUp-section").css(css1);
                 $("#homeSection").css(css2)
