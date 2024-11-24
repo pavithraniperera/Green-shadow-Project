@@ -1,3 +1,16 @@
+$(document).ready(function () {
+    // Fetch staff data on page load
+    fetchEquipmentData();
+
+    // Row click event to open modal and populate it with staff data
+    $(document).on("click", ".equip-row", function () {
+        const equipData = $(this).data("equip");
+        populateEquipModal(equipData);
+        console.log(equipData)
+        $("#equipmentDetailModal").modal("show");
+    });
+});
+
 document.getElementById('equipmentStatusFilter').addEventListener('change', function() {
     const filter = this.value;
     const rows = document.querySelectorAll('#equipmentTableBody tr');
@@ -19,22 +32,6 @@ document.getElementById('equipmentSearch').addEventListener('input', function() 
         row.style.display = (name.includes(searchQuery) || type.includes(searchQuery)) ? '' : 'none';
     });
 });
-document.querySelectorAll('#equipmentTableBody tr').forEach(row => {
-    row.addEventListener('click', () => {
-        // Get data from row (this could be retrieved from data attributes or an object)
-        /*  const equipmentData = {
-              id: row.querySelector('.equipment-id').innerText,
-              name: row.querySelector('.equipment-name').innerText,
-              type: row.querySelector('.equipment-type').innerText,
-              status: row.querySelector('.equipment-status').innerText,
-              assignedStaff: row.querySelector('.assigned-staff').innerText,
-              assignedField: row.querySelector('.assigned-field').innerText,
-              remarks: row.querySelector('.equipment-remarks').innerText,
-          };*/
-
-        $('#equipmentDetailModal').modal('show');
-    });
-});
 
 function toggleEquipmentEditMode() {
     // Close the staffDetailModal
@@ -52,4 +49,201 @@ function toggleEquipmentEditMode() {
 
 
 }
+$("#addNewEquipment").click(function () {
+    fetchFieldsForEquipments()
+    fetchStaffForEquipment()
+
+})
+
+function fetchFieldsForEquipments() {
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/fields", // Update with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            // Assuming response is an array of FieldDto objects
+            const fieldSelect = $("#newAssignedField");
+            fieldSelect.empty(); // Clear existing options
+            fieldSelect.append('<option value="">Select Field</option>'); // Add default option
+
+            // Populate the select element with field names and IDs
+            response.forEach(field => {
+                const option = `<option value="${field.fieldId}">${field.name}</option>`;
+                fieldSelect.append(option);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching fields:", error);
+            showAlert("Failed to load fields. Please try again later.",'error');
+        }
+    });
+}
+function fetchStaffForEquipment(){
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Update with your actual endpoint
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (staffList) {
+            // Assuming response is an array of FieldDto objects
+            const staffSelect = $("#newAssignedStaff");
+            staffSelect.empty();
+            staffSelect.append('<option value="">Select Staff</option>'); // Default option
+
+            // Populate the select element with fetched staff and pre-select assigned ones
+            staffList.forEach(staff => {
+
+                const option = `<option value="${staff.staffId}">${staff.firstName}</option>`;
+                staffSelect.append(option);
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching Staff:", error);
+            showAlert("Failed to load staff. Please try again later.",'error');
+        }
+    });
+}
+
+// Event listener for the Save Equipment button
+$("#saveEquipmentBtn").on("click", function () {
+    // Gather data from the form fields
+    const equipmentDto = {
+        name: $("#newEquipmentName").val(),
+        type: $("#newEquipmentType").val(),
+        status: $("#newEquipmentStatus").val(),
+        staffId: $("#newAssignedStaff").val(), // Ensure this matches your backend field name
+        fieldId: $("#newAssignedField").val(), // Ensure this matches your backend field name
+        remarks: $("#newEquipmentRemarks").val()
+    };
+    console.log(equipmentDto)
+
+    // Validate form data (optional but recommended)
+    if (!equipmentDto.name || !equipmentDto.type || !equipmentDto.status) {
+        alert("Please fill in all the required fields.");
+        return;
+    }
+
+    // Send the AJAX POST request
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/equipments", // Adjust the endpoint as necessary
+        type: "POST",
+        contentType: "application/json",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"), // Include JWT if required
+        },
+        data: JSON.stringify(equipmentDto),
+        success: function (response) {
+            showAlert("Equipment saved successfully!",'success');
+            console.log("Equipment created:", response);
+
+            // Close the modal
+            $("#addEquipmentModal").modal("hide");
+
+            // Optionally, reset the form fields
+            $("#addEquipmentForm")[0].reset();
+
+            // Optionally, refresh the equipment list or table
+            //loadEquipmentList(); // Implement this function if needed
+        },
+        error: function (xhr) {
+            console.error("Error saving equipment:", xhr.responseText);
+            showAlert("Failed to save equipment. Please try again.",'error');
+        }
+    });
+});
+
+function fetchEquipmentData() {
+    $.ajax({
+        url: "http://localhost:8080/greenShadow/api/v1/equipments",
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (response) {
+            const tableBody = $("#equipmentTableBody");
+            tableBody.empty(); // Clear existing rows
+
+            if (response && response.length > 0) {
+                $(".no-data").hide(); // Hide the no-data placeholder
+                $(".equipment-container").show(); // Show the table container
+
+                // Populate the table with vehicle data
+                response.forEach(equip => {
+                    const fieldName = getField(equip.fieldId)
+                    const staffName = getStaff(equip.staffId)
+                    const row = `
+                        <tr class="equip-row" data-status="${equip.status.toLowerCase()}">
+                            <td>${equip.name}</td>
+                            <td>${equip.type}</td>
+                            <td>${equip.status}</td>
+                            <td>${staffName}</td>
+                            <td>${fieldName}</td>
+                        </tr>
+                    `;
+                    const $row = $(row);
+                    $row.data("equip", equip); // Attach the staff object to the row
+                    tableBody.append($row);
+
+                });
+
+            } else {
+                $(".equipment-container").hide(); // Hide the table container
+                $(".no-data").show(); // Show the no-data placeholder
+            }
+        },
+        error: function (xhr) {
+            console.error("Error fetching vehicle data:", xhr.responseText);
+            alert("Failed to load vehicle data. Please try again.");
+        }
+    });
+}
+
+function getField(fieldId) {
+    let fieldName = "N/A";
+
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`,
+        type: "GET",
+        async: false,
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+        },
+        success: function (response) {
+            fieldName = response.name || "N/A";
+        },
+        error: function (xhr) {
+            console.error("Error fetching field name:", xhr.responseText);
+        }
+    });
+   console.log(fieldName)
+    return fieldName;
+}
+function getStaff(staffId) {
+    let staffName = "N/A"; // Default value in case the staff is not found
+
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}`,
+        type: "GET",
+        async: false,
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+        },
+        success: function (response) {
+            staffName = response.firstName +" "+response.lastName|| "N/A";
+        },
+        error: function (xhr) {
+            console.error("Error fetching staff name:", xhr.responseText);
+        }
+    });
+   console.log(staffName)
+    return staffName;
+}
+function   populateEquipModal(equipData){
+
+}
+
+
 
