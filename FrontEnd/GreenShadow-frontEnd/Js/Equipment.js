@@ -33,22 +33,7 @@ document.getElementById('equipmentSearch').addEventListener('input', function() 
     });
 });
 
-function toggleEquipmentEditMode() {
-    // Close the staffDetailModal
-    $('#equipmentDetailModal').modal('hide');
 
-    // Open the addStaffModal
-    $('#addEquipmentModal').modal('show');
-
-    // Change the modal header to "Update Member"
-    document.getElementById('addEquipmentModalLabel').innerText = 'Update Equipment';
-
-    // Change the button text from "Add Staff" to "Save Changes"
-    const addEquipment = document.getElementById('saveEquipmentBtn');
-    addEquipment.innerText = 'Save Changes';
-
-
-}
 $("#addNewEquipment").click(function () {
     fetchFieldsForEquipments()
     fetchStaffForEquipment()
@@ -266,6 +251,108 @@ function   populateEquipModal(equipData){
     $("#equipmentRemarks").val(equipData.remarks || "N/A");
 
 }
+function changeVehicleModalData(){
+    // Change the modal header to "Update Member"
+    document.getElementById('addEquipmentModalLabel').innerText = 'Add Equipment';
+
+    // Change the button text from "Add Staff" to "Save Changes"
+    // Hide the "Add Field" button
+    document.getElementById("saveEquipmentBtn").style.display = "inline-block";
+    // Show the "Save Changes" button
+    document.getElementById("equipSaveBtn").style.display = "none";
+
+}
+function toggleEquipmentEditMode() {
+    const  equipId = $("#equipmentId").val()
+    // Close the staffDetailModal
+    $('#equipmentDetailModal').modal('hide');
+
+    // Open the addStaffModal
+    $('#addEquipmentModal').modal('show');
+    fetchStaffForEquipment()
+    fetchFieldsForEquipments()
+    populateEquipData(equipId);
+
+
+
+}
+var equipmentId;
+function populateEquipData(equipId){
+    equipmentId = equipId;
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipId}`, // Replace with your API endpoint
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (data) {
+            console.log(data)
+            $("#newEquipmentName").val(data.name)
+            $("#newEquipmentType").val(data.type)
+            $("#newEquipmentStatus").val(data.status)
+            $("#newAssignedStaff").val(data.staffId)
+            $("#newAssignedField").val(data.fieldId)
+            $("#newEquipmentRemarks").val(data.remarks)
+
+            // Change the modal header to "Update Member"
+            document.getElementById('addEquipmentModalLabel').innerText = 'Update Equipment';
+
+            // Hide the "Add Field" button
+            document.getElementById("saveEquipmentBtn").style.display = "none";
+            // Show the "Save Changes" button
+            document.getElementById("equipSaveBtn").style.display = "inline-block";
+        },
+        error: function () {
+            alert("Failed to load Equipment details. Please try again.");
+        }
+    });
+}
+
+$("#equipSaveBtn").click(function (){
+    const equipmentDto = {
+        name: $("#newEquipmentName").val(),
+        type: $("#newEquipmentType").val(),
+        status: $("#newEquipmentStatus").val(),
+        staffId: $("#newAssignedStaff").val(), // Ensure this matches your backend field name
+        fieldId: $("#newAssignedField").val(), // Ensure this matches your backend field name
+        remarks: $("#newEquipmentRemarks").val()
+    };
+    console.log(equipmentDto)
+
+    // Validate form data (optional but recommended)
+    if (!equipmentDto.name || !equipmentDto.type || !equipmentDto.status) {
+        alert("Please fill in all the required fields.");
+        return;
+    }
+
+    // Send the AJAX POST request
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipmentId}`, // Adjust the endpoint as necessary
+        type: "PUT",
+        contentType: "application/json",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"), // Include JWT if required
+        },
+        data: JSON.stringify(equipmentDto),
+        success: function (response) {
+            showAlert("Equipment Updated successfully!",'success');
+            console.log("Equipment updated:", response);
+
+            // Close the modal
+            $("#addEquipmentModal").modal("hide");
+
+            // Optionally, reset the form fields
+            $("#addEquipmentForm")[0].reset();
+
+            fetchEquipmentData()
+        },
+        error: function (xhr) {
+            console.error("Error updating equipment:", xhr.responseText);
+            showAlert("Failed to update equipment. Please try again.",'error');
+        }
+    });
+})
+
 
 
 
