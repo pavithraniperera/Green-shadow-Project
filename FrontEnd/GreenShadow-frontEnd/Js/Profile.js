@@ -64,8 +64,9 @@ function deleteAccount() {
 
 }
 
-
+var role ;
 function fetchProfileData() {
+
     const email = localStorage.getItem("email");
     if (!email) {
         alert("Email not found in local storage!");
@@ -80,6 +81,8 @@ function fetchProfileData() {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (data) {
+            role = data.role;
+            manageButtonVisibility()
             // Populate the profile fields
             $("#UserId").val(data.staffId);
             $("#userFirstName").val(data.firstName);
@@ -139,6 +142,7 @@ function updateProfile() {
             showAlert("Profile updated successfully!",'success');
             console.log("Updated Staff:", response);
 
+
             // Optionally, reload the profile data or refresh the page
             fetchProfileData(); // Assume a function exists to reload profile data
             fetchStaffData()
@@ -150,6 +154,82 @@ function updateProfile() {
         }
     });
 }
+
+function manageButtonVisibility() {
+
+    // Ensure role exists
+    if (!role) {
+        console.error("User role not found.");
+        return;
+    }
+
+    // Hide all buttons initially
+    hideAll()
+
+    // Apply role-based logic
+    if (role === "MANAGER") {
+        $(".add-filed").css(css2)
+        $("#FieldUpdateBtn").css(css2)
+        $("#FieldDeleteBtn").css(css2)
+        $("#CropUpdateBtn").css(css2)
+        $("#CropDeleteBtn").css(css2)
+        $("#staffDeleteBtn").css(css2)
+        $("#staffUpdateBtn").css(css2)
+        $("#deleteVehicleBtn").css(css2)
+        $("#updateVehicleBtn").css(css2)
+        $("#deleteEquipmentBtn").css(css2)
+        $("#updateEquipmentBtn").css(css2)
+        $("#logDeleteBtn").css(css2)
+        $("#logUpdateBtn").css(css2)
+
+    } else if (role === "ADMINISTRATIVE") {
+        // Limited access: No crop, field, or monitor log edits
+        $("#staffDeleteBtn").css(css2)
+        $("#staffUpdateBtn").css(css2)
+        $("#staffSave").css(css2)
+        $("#deleteVehicleBtn").css(css2)
+        $("#updateVehicleBtn").css(css2)
+        $("#deleteEquipmentBtn").css(css2)
+        $("#updateEquipmentBtn").css(css2)
+        $("#addVehicle").css(css2)
+        $("#addNewEquipment").css(css2)
+
+
+
+    } else if (role === "SCIENTIST") {
+        // Limited access: No staff, vehicle, or equipment edits
+        $("#FieldUpdateBtn").css(css2)
+        $("#FieldDeleteBtn").css(css2)
+        $("#CropUpdateBtn").css(css2)
+        $("#CropDeleteBtn").css(css2)
+        $("#logDeleteBtn").css(css2)
+        $("#logUpdateBtn").css(css2)
+        $("#openAddLogModal").css(css2)
+        $("#openAddModal").css(css2)
+        $("#add-field").css(css2)
+
+    } else {
+        console.warn("Role not recognized: ", role);
+    }
+}
+function hideAll(){
+    $(".add-filed").css(css1);
+    $("#FieldUpdateBtn").css(css1)
+    $("#FieldDeleteBtn").css(css1)
+    $("#CropUpdateBtn").css(css1)
+    $("#CropDeleteBtn").css(css1)
+    $("#staffDeleteBtn").css(css1)
+    $("#staffUpdateBtn").css(css1)
+    $("#deleteVehicleBtn").css(css1)
+    $("#updateVehicleBtn").css(css1)
+    $("#deleteEquipmentBtn").css(css1)
+    $("#updateEquipmentBtn").css(css1)
+    $("#logDeleteBtn").css(css1)
+    $("#logUpdateBtn").css(css1)
+
+}
+
+
 
 
 
