@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/staffs")
@@ -56,11 +57,13 @@ public class StaffController {
 
     }
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public List<StaffDto> getAllUsers(){
         return staffService.findAll();
     }
 
     @GetMapping(value = "/{staffId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public ResponseEntity<?> getFieldById(@PathVariable("staffId") String staffId) {
         // Validate field ID format using RegexUtilForId
         if (!RegexUtilForId.isValidStaffId(staffId)) {
@@ -77,10 +80,19 @@ public class StaffController {
     }
 
     @GetMapping("/{staffId}/field")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public ResponseEntity<List<FieldDto>> getFieldsOfStaffId(@PathVariable("staffId") String staffId) {
         List<FieldDto> fieldDtos = staffService.getFieldsOfStaffId(staffId);
         return ResponseEntity.ok(fieldDtos);
     }
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
+    public ResponseEntity<StaffDto> getStaffByEmail(@PathVariable("email") String email) {
+        Optional<StaffDto> staffDto = staffService.findByEmail(email);
+
+        return ResponseEntity.ok(staffDto.get());
+    }
+
 
 
 }
