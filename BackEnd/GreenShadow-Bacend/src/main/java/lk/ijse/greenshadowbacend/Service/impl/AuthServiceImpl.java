@@ -40,7 +40,10 @@ public class AuthServiceImpl implements AuthService {
         userDTO.setId(AppUtil.generateUserId());
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         //save user
-        UserEntity savedUser = userDao.save(mapping.toUserEntity(userDTO));
+        UserEntity user = mapping.toUserEntity(userDTO);
+        System.out.println(user);
+        UserEntity savedUser = userDao.save(user);
+       // System.out.println(savedUser);
         //generate token
         var token = jwtService.generateToken(savedUser);
         return JWTAuthResponse.builder().token(token).build();

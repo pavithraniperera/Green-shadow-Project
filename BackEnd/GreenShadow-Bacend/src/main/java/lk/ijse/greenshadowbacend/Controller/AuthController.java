@@ -31,6 +31,7 @@ public class AuthController {
     @PostMapping(value = "signup", consumes = MediaType.APPLICATION_JSON_VALUE)
     //@PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATOR') or hasRole('SCIENTIST')")
     public ResponseEntity<JWTAuthResponse> createUser(@RequestBody UserDto userDto) {
+        System.out.println(userDto);
         try {
             // Check if a staff member exists with the given email
             Optional<StaffDto> existingStaff = staffService.findByEmail(userDto.getEmail());
