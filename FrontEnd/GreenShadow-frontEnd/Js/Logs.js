@@ -376,8 +376,8 @@ function fetchCropForLog(assignedCrops) {
 
             // Populate the select element with fetched crops and pre-select assigned ones
             crops.forEach(crop => {
-                const isSelected = assignedCrops && assignedCrops.some(c => c.cropId === crop.cropId);
-                const option = `<option value="${crop.cropId}" ${isSelected ? "selected" : ""}>${crop.commonName}</option>`;
+                const isSelected = assignedCrops && assignedCrops.some(c => c.id === crop.id);
+                const option = `<option value="${crop.id}" ${isSelected ? "selected" : ""}>${crop.commonName}</option>`;
                 cropSelect.append(option);
             });
         },
@@ -427,9 +427,9 @@ $("#openAddLogModal").click(function () {
 function clearForm() {
     $("#addMonitoringLogForm")[0].reset();
     $("#logPreview").hide().attr("src", "");
-    $("#fieldsContainer").empty();
+   /* $("#fieldsContainer").empty();
     $("#cropsContainer").empty();
-    $("#staffContainer").empty();
+    $("#staffContainer").empty();*/
 }
 
 function saveLog() {
@@ -456,6 +456,7 @@ function saveLog() {
         date:new Date(),
         status: logStatus
     };
+    console.log(crops)
     // Conditionally add fields if not empty
     if (fields.length > 0) {
         logData.fieldIds = fields;
