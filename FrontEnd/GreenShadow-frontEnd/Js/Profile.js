@@ -5,17 +5,152 @@ function toggleProfileEditMode() {
             input.readOnly = !input.readOnly;
         }
     });
+
     document.getElementById('saveChangesBtn').style.display = 'inline';
     document.getElementById('editProfileBtn').style.display = 'none';
 }
 
 
-function saveProfile() {
-    // Logic to save profile
-    alert("Profile changes saved.");
-}
+
 
 function deleteAccount() {
-    // Logic to delete account
-    alert("Account deleted.");
+    // Get the email from the profile field or local storage
+    const email = $("#userEmail").val(); // Assuming the email is displayed in the profile form
+
+    if (!email) {
+        alert("Email not found. Cannot delete the account.");
+        return;
+    }
+
+    // Confirmation dialog
+    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
+        return;
+    }
+
+
+    // Confirm before deletion
+    if (!confirm("Are you sure you want to delete this account? This action cannot be undone.")) {
+        return;
+    }
+
+    // AJAX DELETE request
+    $.ajax({
+        url: `http://localhost:8080/greenShadows/api/v1/users/${email}`,
+        type: "DELETE",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Include JWT for authorization
+        },
+        success: function () {
+            // Notify success
+            showAlert("Account deleted successfully.",'success');
+            console.log("Account deleted for email:", email);
+
+            localStorage.clear();
+            $("#homeSection").css(css1);
+            $("#signUp-section").css(css1);
+        },
+        error: function (xhr, status, error) {
+            // Handle errors and notify the user
+            if (xhr.status === 400) {
+                alert("Invalid email format. Please check and try again.");
+            } else if (xhr.status === 404) {
+                alert("User not found. Unable to delete the account.");
+            } else {
+                alert("An error occurred while deleting the account. Please try again.");
+            }
+            console.error("Error deleting account:", status, error);
+        }
+    });
+
 }
+
+
+function fetchProfileData() {
+    const email = localStorage.getItem("email");
+    if (!email) {
+        alert("Email not found in local storage!");
+        return;
+    }
+
+    // Fetch staff data using the email
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/email/${email}`, // Adjust the endpoint URL based on your API
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        success: function (data) {
+            // Populate the profile fields
+            $("#UserId").val(data.staffId);
+            $("#userFirstName").val(data.firstName);
+            $("#userLastName").val(data.lastName);
+            $("#userDesignation").val(data.designation);
+            $("#UserDob").val(data.dob);
+            $("#joinedDate").val(data.joinDate);
+            $("#contactNo").val(data.contact);
+            $("#profileGender").val(data.gender);
+            $("#userEmail").val(data.email);
+            $("#UserRole").val(data.role);
+            // Split the address into lines and populate fields
+            const addressParts = data.address.split(",");
+            $("#addressLine1").val(addressParts[0] || "N/A");
+            $("#addressLine2").val(addressParts[1] || "N/A");
+            $("#addressLine3").val(addressParts[2] || "N/A");
+            $("#addressLine4").val(addressParts[3] || "N/A");
+        },
+        error: function (xhr, status, error) {
+            console.error("Failed to fetch staff data:", error);
+            alert("Could not fetch Profile data. Please try again.");
+        },
+    });
+}
+
+function updateProfile() {
+    // Collect the profile data from the form
+    const staffId = $("#UserId").val(); // Read-only field
+    const updatedData = {
+        firstName: $("#userFirstName").val(),
+        lastName: $("#userLastName").val(),
+        designation: $("#userDesignation").val(),
+        dob: $("#UserDob").val(),
+        joinDate: $("#joinedDate").val(),
+        contact: $("#contactNo").val(),
+        gender: $("#profileGender").val(),
+        email: $("#userEmail").val(),
+        address: [
+            $("#addressLine1").val(),
+            $("#addressLine2").val(),
+            $("#addressLine3").val(),
+            $("#addressLine4").val()
+        ].filter(line => line.trim() !== "").join(",") // Combine non-empty lines with commas
+    };
+
+    // AJAX PUT request to update staff
+    $.ajax({
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}`,
+        type: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(updatedData),
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Include JWT for authorization
+        },
+        success: function (response) {
+            // Handle success - Notify the user and update UI
+            showAlert("Profile updated successfully!",'success');
+            console.log("Updated Staff:", response);
+
+            // Optionally, reload the profile data or refresh the page
+            fetchProfileData(); // Assume a function exists to reload profile data
+            fetchStaffData()
+        },
+        error: function (xhr, status, error) {
+            // Handle error - Notify the user and log error details
+            alert("Error updating profile: " + xhr.responseText);
+            console.error("Error:", status, error);
+        }
+    });
+}
+
+
+
+
