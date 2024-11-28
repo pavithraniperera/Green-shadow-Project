@@ -413,7 +413,7 @@ function clearFieldForm(){
     $("#preview2").attr("src", ""); // Clear second image preview
 }
 $(document).ready(function () {
-    fetchFields();
+
     initMap()
 
 });

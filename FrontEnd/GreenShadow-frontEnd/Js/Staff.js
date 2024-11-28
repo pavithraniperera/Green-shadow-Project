@@ -1,14 +1,10 @@
-$(document).ready(function () {
-    // Fetch staff data on page load
-    fetchStaffData();
 
-    // Row click event to open modal and populate it with staff data
-    $(document).on("click", ".staff-row", function () {
-        const staffData = $(this).data("staff");
-        populateModal(staffData);
-        console.log(staffData)
-        $("#staffDetailModal").modal("show");
-    });
+// Row click event to open modal and populate it with staff data
+$(document).on("click", ".staff-row", function () {
+    const staffData = $(this).data("staff");
+    populateModal(staffData);
+    console.log(staffData)
+    $("#staffDetailModal").modal("show");
 });
 
 

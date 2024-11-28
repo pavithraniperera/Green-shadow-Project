@@ -1,6 +1,4 @@
-$(document).ready(function () {
-  fetchCrops()
-});
+
 var cropId;
 // Function to preview the uploaded image
 function previewCropImage(event, previewId) {

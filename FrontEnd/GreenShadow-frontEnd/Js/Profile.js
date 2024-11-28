@@ -15,7 +15,7 @@ function toggleProfileEditMode() {
 
 function deleteAccount() {
     // Get the email from the profile field or local storage
-    const email = $("#userEmail").val(); // Assuming the email is displayed in the profile form
+    const email = $("#userEmail").val();
 
     if (!email) {
         alert("Email not found. Cannot delete the account.");

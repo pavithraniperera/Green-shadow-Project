@@ -1,14 +1,10 @@
-$(document).ready(function () {
-    // Fetch staff data on page load
-    fetchEquipmentData();
 
-    // Row click event to open modal and populate it with staff data
-    $(document).on("click", ".equip-row", function () {
-        const equipData = $(this).data("equip");
-        populateEquipModal(equipData);
-        console.log(equipData)
-        $("#equipmentDetailModal").modal("show");
-    });
+// Row click event to open modal and populate it with staff data
+$(document).on("click", ".equip-row", function () {
+    const equipData = $(this).data("equip");
+    populateEquipModal(equipData);
+    console.log(equipData)
+    $("#equipmentDetailModal").modal("show");
 });
 
 document.getElementById('equipmentStatusFilter').addEventListener('change', function() {

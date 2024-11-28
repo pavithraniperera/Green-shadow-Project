@@ -1,8 +1,4 @@
-$(document).ready(function () {
-    // Fetch staff data on page load
-    fetchLogs();
 
-});
 
 function updateLogData(logId) {
     $.ajax({

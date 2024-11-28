@@ -1,14 +1,10 @@
-$(document).ready(function () {
-    // Fetch staff data on page load
-    fetchVehicleData();
 
-    // Row click event to open modal and populate it with staff data
-    $(document).on("click", ".vehicle-row", function () {
-        const vehicleData = $(this).data("vehicle");
-        populateVehicleModal(vehicleData);
-        console.log(vehicleData)
-        $("#vehicleDetailModal").modal("show");
-    });
+// Row click event to open modal and populate it with staff data
+$(document).on("click", ".vehicle-row", function () {
+    const vehicleData = $(this).data("vehicle");
+    populateVehicleModal(vehicleData);
+    console.log(vehicleData)
+    $("#vehicleDetailModal").modal("show");
 });
 
 

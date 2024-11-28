@@ -125,6 +125,15 @@ $(document).ready(function() { // This function runs when the document is ready
         });
     });
 
+    function fetchAllData(){
+        fetchProfileData()
+        fetchLogs()
+        fetchStaffData()
+        fetchEquipmentData()
+        fetchVehicleData()
+        fetchCrops()
+        fetchFields()
+    }
 
 // Sign-In
     $('#login-signIn').click(function () {
@@ -146,6 +155,7 @@ $(document).ready(function() { // This function runs when the document is ready
                 $("#signUp-section").css(css1);
                 $("#homeSection").css(css2)
                 handleNavClick("nav-dashboard");
+                fetchAllData();
                 $("body").css({
                     backgroundColor:"#FAF5E6"
                 })
