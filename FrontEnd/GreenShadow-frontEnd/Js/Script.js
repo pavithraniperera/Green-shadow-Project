@@ -115,6 +115,7 @@ $(document).ready(function() { // This function runs when the document is ready
                 // Store the token from the response
                 localStorage.setItem('token', response.token);
                 showAlert("Sign-up successful!","success");
+                $("#signUp-section form")[0].reset();
                 $("#login-section").css(css2);
                 $("#signUp-section").css(css1);
 
@@ -151,6 +152,7 @@ $(document).ready(function() { // This function runs when the document is ready
                 localStorage.setItem('email',email)
                 showAlert("Sign-in successful!",'success');
                 fetchProfileData()
+                $("#login-section form")[0].reset();
                 $("#login-section").css(css1);
                 $("#signUp-section").css(css1);
                 $("#homeSection").css(css2)
@@ -168,4 +170,29 @@ $(document).ready(function() { // This function runs when the document is ready
         });
     });
 
+});
+$("#nav-log-out").click(function () {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You will be logged out of your account.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, log me out!",
+        cancelButtonText: "No, stay logged in",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Remove localStorage and redirect to login
+            localStorage.removeItem("token");
+            localStorage.removeItem("email");
+            $("#login-section").css(css2);
+            $("#signUp-section").css(css1);
+            $("#homeSection").css(css1)
+            $("body").css({
+
+                backgroundColor:"#8fa98f"
+            })
+        }
+    });
 });
