@@ -6,6 +6,7 @@ import lk.ijse.greenshadowbacend.Dto.impl.FieldDto;
 import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Entity.FieldEntity;
 import lk.ijse.greenshadowbacend.Entity.StaffEntity;
+import lk.ijse.greenshadowbacend.Exception.FieldNotFoundException;
 import lk.ijse.greenshadowbacend.Service.FieldService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
@@ -97,7 +98,13 @@ public class FieldServiceImpl implements FieldService {
     @Override
     @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public void delete(String id) {
-        fieldDao.deleteById(id);
+        FieldEntity field = fieldDao.findById(id)
+                .orElseThrow(() -> new FieldNotFoundException("Field not found with ID: "+id ));
+
+        // Remove associations with staff members
+        field.getStaffMembers().forEach(staff -> staff.getFields().remove(field));
+        field.getStaffMembers().clear();
+        fieldDao.delete(field);
 
     }
 

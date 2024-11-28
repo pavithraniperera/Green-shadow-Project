@@ -27,7 +27,7 @@ public class FieldEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String image2;
 
-    @ManyToMany(mappedBy = "fields",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "fields")
     @JsonBackReference
     private Set<StaffEntity> staffMembers = new HashSet<>();
 
