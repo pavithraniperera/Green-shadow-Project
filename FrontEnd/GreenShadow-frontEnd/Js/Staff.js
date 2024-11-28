@@ -435,39 +435,58 @@ $("#staffDeleteBtn").click(function () {
     const StaffId = $("#sId").val(); // Assuming a hidden input or other source for field ID.
 
     if (!StaffId) {
-        alert("Staff ID is missing! Cannot delete the Staff.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Staff ID is missing!',
+            text: 'Cannot delete the Staff.',
+            confirmButtonText: 'OK'
+        });
         return;
+
     }
 
-    // Confirmation dialog
-    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
-        return;
-    }
+    if (StaffId){
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonColor: "green",
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Proceed with the deletion action
+                $.ajax({
+                    url: `http://localhost:8080/greenShadow/api/v1/staffs/${StaffId}`, // Your delete endpoint
+                    type: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                    },
+                    success: function (response) {
+                        // Perform actions on successful deletion
+                        showAlert("Staff deleted successfully.", "success");
+                        $("#staffDetailModal").modal("hide"); // Hide the modal
 
-    $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/staffs/${StaffId}`, // Your delete endpoint
-        type: "DELETE",
-        headers: {
-            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
-        },
-        success: function (response) {
-            // Perform actions on successful deletion
-            showAlert("Staff deleted successfully.", "success");
-            $("#staffDetailModal").modal("hide"); // Hide the modal
-
-            fetchStaffData()
-        },
-        error: function (xhr, status, error) {
-            // Handle errors
-            if (xhr.status === 404) {
-                showAlert("member not found.", "error");
-            } else if (xhr.status === 400) {
-                showAlert("Invalid member ID.", "error");
-            } else {
-                showAlert("Error deleting staff. Please try again.", "error");
+                        fetchStaffData()
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors
+                        if (xhr.status === 404) {
+                            showAlert("member not found.", "error");
+                        } else if (xhr.status === 400) {
+                            showAlert("Invalid member ID.", "error");
+                        } else {
+                            showAlert("Error deleting staff. Please try again.", "error");
+                        }
+                    }
+                });
             }
-        }
-    });
+        });
+    }
+
+
 
 });
 

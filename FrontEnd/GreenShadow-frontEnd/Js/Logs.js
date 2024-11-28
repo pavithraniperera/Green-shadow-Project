@@ -679,39 +679,59 @@ $("#logDeleteBtn").click(function () {
     const logId = $("#logCode").val(); // Assuming a hidden input or other source for field ID.
 
     if (!logId) {
-        alert("Field ID is missing! Cannot delete the field.");
-        return;
-    }
-
-    // Confirmation dialog
-    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
-        return;
-    }
-
-    $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Your delete endpoint
-        type: "DELETE",
-        headers: {
-            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
-        },
-        success: function (response) {
-            // Perform actions on successful deletion
-            showAlert("Crop deleted successfully.", "success");
-            $("#logDetailModal").modal("hide"); // Hide the modal
-
-            fetchLogs()
-        },
-        error: function (xhr, status, error) {
-            // Handle errors
-            if (xhr.status === 404) {
-                showAlert("Field not found.", "error");
-            } else if (xhr.status === 400) {
-                showAlert("Invalid field ID.", "error");
-            } else {
-                showAlert("Error deleting field. Please try again.", "error");
-            }
+        if (!fieldId) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Log ID is missing!',
+                text: 'Cannot delete the Log.',
+                confirmButtonText: 'OK'
+            });
+            return;
         }
-    });
+    }
+    if (logId){
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonColor: "green",
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Proceed with the deletion action
+                $.ajax({
+                    url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Your delete endpoint
+                    type: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                    },
+                    success: function (response) {
+                        // Perform actions on successful deletion
+                        showAlert("Crop deleted successfully.", "success");
+                        $("#logDetailModal").modal("hide"); // Hide the modal
+
+                        fetchLogs()
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors
+                        if (xhr.status === 404) {
+                            showAlert("Field not found.", "error");
+                        } else if (xhr.status === 400) {
+                            showAlert("Invalid field ID.", "error");
+                        } else {
+                            showAlert("Error deleting field. Please try again.", "error");
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+
 
 });
  $("#lDate").on("keypress", function (e) {

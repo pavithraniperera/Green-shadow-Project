@@ -353,41 +353,59 @@ $("#deleteEquipmentBtn").click(function () {
     const equipId = $("#equipmentId").val(); // Assuming a hidden input or other source for field ID.
 
     if (!equipId) {
-        alert("Staff ID is missing! Cannot delete the Staff.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Equipment ID is missing!',
+            text: 'Cannot delete the Equipment.',
+            confirmButtonText: 'OK'
+        });
         return;
     }
+    if (equipId){
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonColor: "green",
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Proceed with the deletion action
+                $.ajax({
+                    url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipId}`, // Your delete endpoint
+                    type: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                    },
+                    success: function (response) {
+                        // Perform actions on successful deletion
+                        showAlert("Equipment deleted successfully.", "success");
+                        $("#equipmentDetailModal").modal("hide"); // Hide the modal
 
-    // Confirmation dialog
-    if (!confirm("Are you sure you want to delete this field? This action cannot be undone.")) {
-        return;
-    }
-
-    $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipId}`, // Your delete endpoint
-        type: "DELETE",
-        headers: {
-            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
-        },
-        success: function (response) {
-            // Perform actions on successful deletion
-            showAlert("Equipment deleted successfully.", "success");
-            $("#equipmentDetailModal").modal("hide"); // Hide the modal
-
-            fetchEquipmentData()
-            fetchLogs()
-            fetchVehicleData()
-        },
-        error: function (xhr, status, error) {
-            // Handle errors
-            if (xhr.status === 404) {
-                showAlert("member not found.", "error");
-            } else if (xhr.status === 400) {
-                showAlert("Invalid member ID.", "error");
-            } else {
-                showAlert("Error deleting Equipment. Please try again.", "error");
+                        fetchEquipmentData()
+                        fetchLogs()
+                        fetchVehicleData()
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors
+                        if (xhr.status === 404) {
+                            showAlert("member not found.", "error");
+                        } else if (xhr.status === 400) {
+                            showAlert("Invalid member ID.", "error");
+                        } else {
+                            showAlert("Error deleting Equipment. Please try again.", "error");
+                        }
+                    }
+                });
             }
-        }
-    });
+        });
+    }
+
+
+
 
 });
 
