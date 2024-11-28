@@ -7,6 +7,7 @@ import lk.ijse.greenshadowbacend.Dto.impl.StaffDto;
 import lk.ijse.greenshadowbacend.Entity.CropEntity;
 import lk.ijse.greenshadowbacend.Entity.FieldEntity;
 import lk.ijse.greenshadowbacend.Entity.StaffEntity;
+import lk.ijse.greenshadowbacend.Exception.StaffNotFoundException;
 import lk.ijse.greenshadowbacend.Service.StaffService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
@@ -108,6 +109,12 @@ public class StaffServiceImpl implements StaffService {
     @Override
 
     public void delete(String id) {
+        StaffEntity staff = staffDao.findById(id)
+                .orElseThrow(() -> new StaffNotFoundException("Field not found with ID: " + id));
+
+        // Remove associations with staff members
+        staff.getLogs().forEach(log -> log.getStaffLogs().remove(staff));
+        staff.getLogs().clear();
         staffDao.deleteById(id);
     }
 

@@ -103,7 +103,9 @@ public class FieldServiceImpl implements FieldService {
 
         // Remove associations with staff members
         field.getStaffMembers().forEach(staff -> staff.getFields().remove(field));
+        field.getLogs().forEach(log -> log.getFieldLogs().remove(field));
         field.getStaffMembers().clear();
+        field.getLogs().clear();
         fieldDao.delete(field);
 
     }

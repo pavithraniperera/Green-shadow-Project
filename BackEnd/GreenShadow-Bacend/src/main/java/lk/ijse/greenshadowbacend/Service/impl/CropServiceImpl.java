@@ -5,6 +5,9 @@ import lk.ijse.greenshadowbacend.Dao.FieldDao;
 import lk.ijse.greenshadowbacend.Dto.impl.CropDto;
 import lk.ijse.greenshadowbacend.Entity.CropEntity;
 import lk.ijse.greenshadowbacend.Entity.FieldEntity;
+import lk.ijse.greenshadowbacend.Entity.StaffEntity;
+import lk.ijse.greenshadowbacend.Exception.CropNotFoundException;
+import lk.ijse.greenshadowbacend.Exception.StaffNotFoundException;
 import lk.ijse.greenshadowbacend.Service.CropService;
 import lk.ijse.greenshadowbacend.Util.AppUtil;
 import lk.ijse.greenshadowbacend.Util.Mapping;
@@ -64,6 +67,13 @@ public class CropServiceImpl implements CropService {
     @Override
     @PreAuthorize("hasRole('MANAGER') or hasRole('SCIENTIST')")
     public void delete(String id) {
+        CropEntity crop = cropDao.findById(id)
+                .orElseThrow(() -> new CropNotFoundException("Crop not found with ID: " + id));
+
+        // Remove associations with staff members
+        crop.getLogs().forEach(log -> log.getCropLogs().remove(crop));
+        crop.getLogs().clear();
+
         cropDao.deleteById(id);
 
     }
