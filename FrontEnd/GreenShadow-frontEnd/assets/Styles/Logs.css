@@ -52,14 +52,14 @@
     color: white;
 }
 
-.log-status.critical {
-    background: #FF5252; /* Critical status color */
+.log-status.complete {
+    background: darkseagreen; /* Critical status color */
 }
-.log-status.warning {
+.log-status.inprogress {
     background: #FFC107; /* Warning status color */
 }
-.log-status.info {
-    background: #03A9F4; /* Info status color */
+.log-status.pending {
+    background: #de6666; /* Info status color */
 }
 
 /* Middle Section: Description and Image */
@@ -111,7 +111,7 @@
     display: flex;
     flex-wrap: wrap; /* Allows wrapping to the next row */
     gap: 35px; /* Space between cards */
-    justify-content: space-around; /* Spacing between cards in the row */
+    justify-content: space-evenly; /* Spacing between cards in the row */
 }
 .modal-header h4{
     margin-top: 15px;
