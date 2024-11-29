@@ -125,6 +125,7 @@ $("#saveEquipmentBtn").on("click", function () {
 
             // Optionally, reset the form fields
             $("#addEquipmentForm")[0].reset();
+            fetchEquipmentData()
 
             // Optionally, refresh the equipment list or table
             //loadEquipmentList(); // Implement this function if needed
@@ -388,6 +389,7 @@ $("#deleteEquipmentBtn").click(function () {
                         fetchEquipmentData()
                         fetchLogs()
                         fetchVehicleData()
+
                     },
                     error: function (xhr, status, error) {
                         // Handle errors
