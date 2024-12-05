@@ -163,7 +163,7 @@ $('#saveBtn').click(function () {
 
     // AJAX call to save staff
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/staffs/${id}`, // Replace with your backend URL
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/${id}`,
         type: "PUT",
         contentType: "application/json",
         headers: {
