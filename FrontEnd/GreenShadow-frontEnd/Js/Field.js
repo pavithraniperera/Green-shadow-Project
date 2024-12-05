@@ -1,5 +1,3 @@
-// JavaScript for Image Slider
-
 
 function toggleFieldEditMode() {
 
@@ -7,13 +5,13 @@ function toggleFieldEditMode() {
 }
 function updateFieldData(fieldId){
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`, // Adjust URL as necessary
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`,
         type: 'GET',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
         },
         success: function(response) {
-            // Call function to populate the modal with the field data
+
             console.log(response)
              populateUpdateFieldModal(response);
         },
@@ -22,6 +20,7 @@ function updateFieldData(fieldId){
         }
     });
 }
+
 //field update modal data
 function populateUpdateFieldModal(fieldData) {
     // Set the field data into the modal inputs
@@ -31,14 +30,14 @@ function populateUpdateFieldModal(fieldData) {
 
     setFieldLocation(fieldData.location);
 
-    // Set the images if they are available
+
     if (fieldData.image1) {
-        $('#preview1').attr('src', `data:image/jpeg;base64,${fieldData.image1}`).show(); // Add data:image/jpeg;base64, prefix if it's an image/jpeg
+        $('#preview1').attr('src', `data:image/jpeg;base64,${fieldData.image1}`).show();
     } else {
         $('#preview1').hide();
     }
     if (fieldData.image2) {
-        $('#preview2').attr('src', `data:image/jpeg;base64,${fieldData.image2}`).show(); // Same for image2
+        $('#preview2').attr('src', `data:image/jpeg;base64,${fieldData.image2}`).show();
     } else {
         $('#preview2').hide();
     }
@@ -49,16 +48,17 @@ function populateUpdateFieldModal(fieldData) {
     // Open the addStaffModal
     $('#addFieldModal').modal('show');
 
-    // Change the modal header to "Update Member"
+    // Change the modal header to "Update Field"
     document.getElementById('addFieldModalLabel').innerText = 'Update Field';
 
-    // Change the button text from "Add Staff" to "Save Changes"
+    // Change the button text from "Add Field" to "Save Changes"
     // Hide the "Add Field" button
     document.getElementById("addField").style.display = "none";
     // Show the "Save Changes" button
     document.getElementById("FieldSaveBtn").style.display = "inline-block";
 
 }
+
 // Function to parse the location string and set the map
 function setFieldLocation(locationString) {
     // Example: "6.7241° N, 79.9164° E"
@@ -72,10 +72,10 @@ function setFieldLocation(locationString) {
     const latitude = parseFloat(latPart.split('°')[0]);
     const longitude = parseFloat(lngPart.split('°')[0]);
 
-    // Set the location input field (to show the location in the input)
+
     $('#location').val(`${latitude}° N, ${longitude}° E`);
 
-    // Initialize the map with parsed latitude and longitude
+    // Initialize the map
     updateMap(latitude, longitude);
 }
 
@@ -112,7 +112,7 @@ $("#addField").click(function () {
         processData: false,
         contentType: false,
         headers: {
-            Authorization: "Bearer " + token // Include JWT in Authorization header
+            Authorization: "Bearer " + token
         },
         success: function (response) {
             console.log(response)
@@ -131,6 +131,7 @@ $("#addField").click(function () {
         }
     });
 });
+
 // JavaScript to handle image preview
 function previewImage(event, previewId) {
     const reader = new FileReader();
@@ -160,7 +161,7 @@ function initMap(){
         center: panaduraCoordinates,
         zoom: 13,
         maxBounds: bounds,
-        maxBoundsViscosity: 1.0 // Prevents panning outside bounds
+        maxBoundsViscosity: 1.0
     });
 
     // Add OpenStreetMap tiles
@@ -191,7 +192,7 @@ function initMap(){
             marker = L.marker(e.latlng).addTo(map);
         }
     });
-    // Add this to refresh the map when the modal is opened
+
     $('#addFieldModal').on('shown.bs.modal', function () {
         map.invalidateSize(); // Refresh map to fit the container
     });
@@ -234,8 +235,8 @@ function updateMap(lat, lng) {
 
     // Add a new marker to the map for the given coordinates
     L.marker([lat, lng]).addTo(map)
-        .bindPopup('Field Location') // Optional: Add a popup for the marker
-        .openPopup(); // Optional: Automatically open the popup
+        .bindPopup('Field Location')
+        .openPopup();
 }
 
 //added field
@@ -248,7 +249,7 @@ $("#FieldSaveBtn").click(function () {
     const fieldUpdateImage1 = $("#fieldImage1")[0].files[0];
     const fieldUpdateImage2 = $("#fieldImage2")[0].files[0];
 
-    // Create a JavaScript object representing field data
+    // Create a  object representing field data
     const fieldData = {
         name: fieldUpdateName,
         location: fieldUpdateLocation,
@@ -291,13 +292,12 @@ $("#FieldSaveBtn").click(function () {
     });
 });
 function changeModalData(){
-    // Change the modal header to "Update Member"
+
     document.getElementById('addFieldModalLabel').innerText = 'Add Field';
 
-    // Change the button text from "Add Staff" to "Save Changes"
-    // Hide the "Add Field" button
+
     document.getElementById("addField").style.display = "inline-block";
-    // Show the "Save Changes" button
+
     document.getElementById("FieldSaveBtn").style.display = "none";
     initMap()
 }
@@ -331,7 +331,7 @@ function populateFields(fields) {
     $(".no-data").hide();
 
     fields.forEach(field => {
-        // Use the Base64 string as the source for each image
+
         const image1Src = field.image1 ? `data:image/jpeg;base64,${field.image1}` : 'https://via.placeholder.com/600x200?text=Field+Image+1';
         const image2Src = field.image2 ? `data:image/jpeg;base64,${field.image2}` : 'https://via.placeholder.com/600x200?text=Field+Image+2';
         const card = `
@@ -408,9 +408,9 @@ function clearFieldForm(){
     // Clear the form fields
     $("#addFieldModal").find("input, textarea, select").val("");
 
-    // If you're previewing images in <img> tags, clear the preview as well
-    $("#preview1").attr("src", ""); // Clear first image preview
-    $("#preview2").attr("src", ""); // Clear second image preview
+
+    $("#preview1").attr("src", "");
+    $("#preview2").attr("src", "");
 }
 $(document).ready(function () {
 
@@ -445,7 +445,7 @@ function openFieldModal( button) {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
         },
         success: function(response) {
-            // Assuming the response is an array of staff objects with "name" and "id"
+
             populateStaffDropdown(response);
         },
         error: function() {
@@ -477,7 +477,7 @@ function populateStaffDropdown(staff) {
     // Clear the current options
     staffDropdown.empty();
 
-    // If there is no staff, display "No staff assigned"
+
     if (staff.length === 0) {
         staffDropdown.append('<option>No staff assigned</option>');
     } else {
@@ -489,7 +489,7 @@ function populateStaffDropdown(staff) {
 
 //delete action
 $("#FieldDeleteBtn").click(function () {
-    const fieldId = $("#fieldCode").val(); // Assuming a hidden input or other source for field ID.
+    const fieldId = $("#fieldCode").val();
 
     if (!fieldId) {
         Swal.fire({
@@ -514,10 +514,10 @@ $("#FieldDeleteBtn").click(function () {
             if (result.isConfirmed) {
                 // Proceed with the deletion action
                 $.ajax({
-                    url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`, // Your delete endpoint
+                    url: `http://localhost:8080/greenShadow/api/v1/fields/${fieldId}`,
                     type: "DELETE",
                     headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                        Authorization: "Bearer " + localStorage.getItem("token")
                     },
                     success: function (response) {
                         // Perform actions on successful deletion
