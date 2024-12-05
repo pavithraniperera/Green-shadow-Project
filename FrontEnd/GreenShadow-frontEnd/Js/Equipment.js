@@ -38,7 +38,7 @@ $("#addNewEquipment").click(function () {
 
 function fetchFieldsForEquipments() {
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/fields", // Update with your actual endpoint
+        url: "http://localhost:8080/greenShadow/api/v1/fields",
         type: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
@@ -47,7 +47,7 @@ function fetchFieldsForEquipments() {
             // Assuming response is an array of FieldDto objects
             const fieldSelect = $("#newAssignedField");
             fieldSelect.empty(); // Clear existing options
-            fieldSelect.append('<option value="">Select Field</option>'); // Add default option
+            fieldSelect.append('<option value="">Select Field</option>');
 
             // Populate the select element with field names and IDs
             response.forEach(field => {
@@ -63,16 +63,16 @@ function fetchFieldsForEquipments() {
 }
 function fetchStaffForEquipment(){
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Update with your actual endpoint
+        url: "http://localhost:8080/greenShadow/api/v1/staffs",
         type: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (staffList) {
-            // Assuming response is an array of FieldDto objects
+
             const staffSelect = $("#newAssignedStaff");
             staffSelect.empty();
-            staffSelect.append('<option value="">Select Staff</option>'); // Default option
+            staffSelect.append('<option value="">Select Staff</option>');
 
             // Populate the select element with fetched staff and pre-select assigned ones
             staffList.forEach(staff => {
@@ -95,8 +95,8 @@ $("#saveEquipmentBtn").on("click", function () {
         name: $("#newEquipmentName").val(),
         type: $("#newEquipmentType").val(),
         status: $("#newEquipmentStatus").val(),
-        staffId: $("#newAssignedStaff").val(), // Ensure this matches your backend field name
-        fieldId: $("#newAssignedField").val(), // Ensure this matches your backend field name
+        staffId: $("#newAssignedStaff").val(),
+        fieldId: $("#newAssignedField").val(),
         remarks: $("#newEquipmentRemarks").val()
     };
     console.log(equipmentDto)
@@ -109,11 +109,11 @@ $("#saveEquipmentBtn").on("click", function () {
 
     // Send the AJAX POST request
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/equipments", // Adjust the endpoint as necessary
+        url: "http://localhost:8080/greenShadow/api/v1/equipments",
         type: "POST",
         contentType: "application/json",
         headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token"), // Include JWT if required
+            "Authorization": "Bearer " + localStorage.getItem("token"),
         },
         data: JSON.stringify(equipmentDto),
         success: function (response) {
@@ -123,12 +123,9 @@ $("#saveEquipmentBtn").on("click", function () {
             // Close the modal
             $("#addEquipmentModal").modal("hide");
 
-            // Optionally, reset the form fields
             $("#addEquipmentForm")[0].reset();
             fetchEquipmentData()
 
-            // Optionally, refresh the equipment list or table
-            //loadEquipmentList(); // Implement this function if needed
         },
         error: function (xhr) {
             console.error("Error saving equipment:", xhr.responseText);
@@ -204,7 +201,7 @@ function getField(fieldId) {
     return fieldName;
 }
 function getStaff(staffId) {
-    let staffName = "N/A"; // Default value in case the staff is not found
+    let staffName = "N/A";
 
     $.ajax({
         url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}`,
@@ -249,13 +246,11 @@ function   populateEquipModal(equipData){
 
 }
 function changeVehicleModalData(){
-    // Change the modal header to "Update Member"
+
     document.getElementById('addEquipmentModalLabel').innerText = 'Add Equipment';
 
-    // Change the button text from "Add Staff" to "Save Changes"
-    // Hide the "Add Field" button
     document.getElementById("saveEquipmentBtn").style.display = "inline-block";
-    // Show the "Save Changes" button
+
     document.getElementById("equipSaveBtn").style.display = "none";
 
 }
@@ -376,10 +371,10 @@ $("#deleteEquipmentBtn").click(function () {
             if (result.isConfirmed) {
                 // Proceed with the deletion action
                 $.ajax({
-                    url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipId}`, // Your delete endpoint
+                    url: `http://localhost:8080/greenShadow/api/v1/equipments/${equipId}`,
                     type: "DELETE",
                     headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                        Authorization: "Bearer " + localStorage.getItem("token")
                     },
                     success: function (response) {
                         // Perform actions on successful deletion

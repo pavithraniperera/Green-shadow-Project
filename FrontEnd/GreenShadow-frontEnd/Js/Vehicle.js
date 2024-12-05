@@ -50,7 +50,7 @@ var vehicleID ;
 function populateVehicleData(vehicleId) {
     vehicleID = vehicleId;
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/vehicles/${vehicleId}`, // Replace with your API endpoint
+        url: `http://localhost:8080/greenShadow/api/v1/vehicles/${vehicleId}`,
         method: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
@@ -64,13 +64,11 @@ function populateVehicleData(vehicleId) {
             $("#remarksModal").val(data.remarks)
             $(".staffForVehicle").val(data.staffId ? data.staffId : "N/A")
 
-            // Change the modal header to "Update Member"
+
             document.getElementById('addVehicleModalLabel').innerText = 'Update Vehicle Details';
 
-            // Change the button text from "Add Staff" to "Save Changes"
-            // Hide the "Add Field" button
             document.getElementById("addVehicleBtn").style.display = "none";
-            // Show the "Save Changes" button
+
             document.getElementById("vehicleSaveBtn").style.display = "inline-block";
         },
         error: function () {
@@ -89,7 +87,7 @@ $("#vehicleSaveBtn").click(function (){
         staffId:$(".staffForVehicle").val()
     };
 
-    // Validate required fields
+
     if (!vehicleData.plateNumber || !vehicleData.fuelType || !vehicleData.status ) {
         alert("Please fill out all required fields.");
         return;
@@ -99,7 +97,7 @@ $("#vehicleSaveBtn").click(function (){
 
     // AJAX POST request to save the vehicle
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/vehicles/${vehicleID}`, // Update with your actual endpoint URL
+        url: `http://localhost:8080/greenShadow/api/v1/vehicles/${vehicleID}`,
         type: "PUT",
         contentType: "application/json",
         data: JSON.stringify(vehicleData),
@@ -110,8 +108,8 @@ $("#vehicleSaveBtn").click(function (){
             showAlert("Vehicle Update successfully!",'success');
             // Close the modal
             $("#addVehicleModal").modal("hide");
-            // Optionally refresh the vehicle list or perform other UI updates
-            fetchVehicleData(); // Define a function to refresh vehicle data
+
+            fetchVehicleData();
             changeVehicleModalData()
         },
         error: function (xhr, status, error) {
@@ -122,13 +120,11 @@ $("#vehicleSaveBtn").click(function (){
 
 })
 function changeVehicleModalData(){
-    // Change the modal header to "Update Member"
+
     document.getElementById('addVehicleModalLabel').innerText = 'Add Vehicle';
 
-    // Change the button text from "Add Staff" to "Save Changes"
-    // Hide the "Add Field" button
     document.getElementById("addVehicleBtn").style.display = "inline-block";
-    // Show the "Save Changes" button
+
     document.getElementById("vehicleSaveBtn").style.display = "none";
 
 }
@@ -143,10 +139,10 @@ function toggleVehicleEditMode() {
     const vehicleCode = $("#vehicleCode").val();
     populateVehicleData(vehicleCode);
 
-    // Change the modal header to "Update Member"
+
     document.getElementById('addVehicleModalLabel').innerText = 'Update Vehicle details';
 
-    // Change the button text from "Add Staff" to "Save Changes"
+
     const addVehicle = document.getElementById('addVehicleBtn');
     addVehicle.innerText = 'Save Changes';
 
@@ -211,7 +207,7 @@ function saveVehicle() {
 
     // AJAX POST request to save the vehicle
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/vehicles", // Update with your actual endpoint URL
+        url: "http://localhost:8080/greenShadow/api/v1/vehicles",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(vehicleData),
@@ -222,8 +218,8 @@ function saveVehicle() {
             showAlert("Vehicle added successfully!",'success');
             // Close the modal
             $("#addVehicleModal").modal("hide");
-            // Optionally refresh the vehicle list or perform other UI updates
-           fetchVehicleData(); // Define a function to refresh vehicle data
+
+           fetchVehicleData();
         },
         error: function (xhr, status, error) {
             console.error("Error saving vehicle:", error);
@@ -289,29 +285,28 @@ function populateVehicleModal(vehicleData){
     $("#remarks").val(vehicleData.remarks || "N/A");
     if (vehicleData.staffId) {
         $.ajax({
-            url: `http://localhost:8080/greenShadow/api/v1/staffs/${vehicleData.staffId}`, // Adjust this endpoint to match your backend
+            url: `http://localhost:8080/greenShadow/api/v1/staffs/${vehicleData.staffId}`,
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + localStorage.getItem("token"),
             },
             success: function (staff) {
-                const staffName = staff.firstName+" "+staff.lastName || "N/A"; // Assuming the response contains the 'name' field
+                const staffName = staff.firstName+" "+staff.lastName || "N/A";
                 $("#allocatedStaff").val(staffName);
             },
             error: function (xhr) {
                 console.error("Error fetching staff data:", xhr.responseText);
-                $("#allocatedStaff").val("Unknown Staff"); // Fallback value in case of error
+                $("#allocatedStaff").val("Unknown Staff");
             }
         });
     } else {
-        $("#allocatedStaff").val("N/A"); // No staff assigned
     }
 
 
 
 }
 $("#deleteVehicleBtn").click(function () {
-    const vehicleId = $("#vehicleCode").val(); // Assuming a hidden input or other source for field ID.
+    const vehicleId = $("#vehicleCode").val();
 
     if (!vehicleId) {
         Swal.fire({

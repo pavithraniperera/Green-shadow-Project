@@ -100,7 +100,7 @@ $("#CropSaveBtn").click(function () {
         processData: false,
         contentType: false,
         headers: {
-            Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+            Authorization: "Bearer " + localStorage.getItem("token")
         },
         success: function (response) {
             console.log(response)
@@ -122,18 +122,17 @@ $("#CropSaveBtn").click(function () {
     });
 });
 function changeCropModalData(){
-    // Change the modal header to "Update Member"
+
     document.getElementById('addCropModalLabel').innerText = 'Add Crop';
 
-    // Change the button text from "Add Staff" to "Save Changes"
-    // Hide the "Add Field" button
+
     document.getElementById("addCrop").style.display = "inline-block";
-    // Show the "Save Changes" button
+
     document.getElementById("CropSaveBtn").style.display = "none";
 
 }
 //save Crop function
-// Attach click event listener to the Add Crop button
+
 $('#openAddModal').click(function () {
     fetchAndPopulateFields()
 });
@@ -177,11 +176,11 @@ $('#addCrop').click(function () {
 
             // update the  UI
             fetchCrops()
-            // Optional: Show a success message
+
             showAlert('Crop added successfully!','success');
         },
         error: function (error) {
-            // Optional: Show an error message
+            //error message
             console.error('Error adding crop:', error);
             showAlert('Failed to add crop. Please try again.','error');
         },
@@ -198,7 +197,7 @@ function fetchAndPopulateFields() {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (response) {
-            // Assuming response is an array of FieldDto objects
+
             const fieldSelect = $("#fieldSelect");
             fieldSelect.empty(); // Clear existing options
             fieldSelect.append('<option value="">Select Field</option>'); // Add default option
@@ -236,7 +235,7 @@ function fetchCrops() {
 // Function to add the new crop card to the UI dynamically
 function addCropToUI(crops) {
     const container = $('#crop-container');
-    container.empty(); // Clear existing content
+    container.empty();
 
     if (crops.length === 0) {
         $(".no-data").show();
@@ -305,14 +304,14 @@ function fetchFieldById(crop, callback) {
     console.log("Field ID:", crop.fieldId);
 
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/fields/${crop.fieldId}`, // Replace with your actual endpoint
+        url: `http://localhost:8080/greenShadow/api/v1/fields/${crop.fieldId}`,
         type: "GET",
         headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token") // Include token if required
+            "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (response) {
             console.log("Fetched Field Data:", response);
-            callback(response.name); // Pass the field name to the callback
+            callback(response.name);
         },
         error: function (error) {
             console.error("Error fetching field by ID:", error);
@@ -348,7 +347,7 @@ function viewCropData(button){
 };
 
 $("#CropDeleteBtn").click(function () {
-    const cropId = $("#cropId").val(); // Assuming a hidden input or other source for field ID.
+    const cropId = $("#cropId").val();
 
     if (!cropId) {
         Swal.fire({
@@ -374,13 +373,13 @@ $("#CropDeleteBtn").click(function () {
          if (result.isConfirmed) {
              // Proceed with the deletion action
              $.ajax({
-                 url: `http://localhost:8080/greenShadow/api/v1/crops/${cropId}`, // Your delete endpoint
+                 url: `http://localhost:8080/greenShadow/api/v1/crops/${cropId}`,
                  type: "DELETE",
                  headers: {
-                     Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                     Authorization: "Bearer " + localStorage.getItem("token")
                  },
                  success: function (response) {
-                     // Perform actions on successful deletion
+
                      showAlert("Crop deleted successfully.", "success");
                      $("#cropDetailModal").modal("hide"); // Hide the modal
 

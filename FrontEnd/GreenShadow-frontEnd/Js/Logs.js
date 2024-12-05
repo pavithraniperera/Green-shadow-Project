@@ -2,7 +2,7 @@
 
 function updateLogData(logId) {
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Adjust URL as necessary
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`,
         type: 'GET',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -32,7 +32,7 @@ function  PopulateLogModal(log){
         ? `data:image/jpeg;base64,${log.image2}`
         : 'https://via.placeholder.com/600x200?text=No+Image';
     $('#logPreview').attr('src', imageSrc).show(); // Set and show the image preview
-    // Populate assigned fields dynamically
+
     populateAssignedData(log.logId);
 
 }
@@ -74,7 +74,7 @@ function setField(fields) {
 
 function setCrop(crops) {
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/crops`, // Fetch all fields
+        url: `http://localhost:8080/greenShadow/api/v1/crops`,
         type: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
@@ -188,13 +188,13 @@ $("#logSaveBtn").click(function () {
     const crops = $(".cropForLog").map(function () {
         return $(this).val();
     }).get()
-        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+        .filter(val => val && val.trim() !== "");
     const staff = $(".staffForLog").map(function () {
         return $(this).val();
     }).get()
-        .filter(val => val && val.trim() !== ""); // Filter out empty values for fields;
+        .filter(val => val && val.trim() !== "");
     const logStatus = $("#logStatus").val();
-    const imageFile = $("#logImage")[0].files[0]; // Get the selected image file
+    const imageFile = $("#logImage")[0].files[0];
 
     // Create the log data object
     const logData = {
@@ -228,25 +228,25 @@ $("#logSaveBtn").click(function () {
 
     // Perform AJAX request
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Replace with your endpoint
+        url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`,
         type: "PUT",
         data: formData,
         processData: false, // Prevent jQuery from processing the data
         contentType: false, // Set the content type to false for FormData
         headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+            "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (response) {
             showAlert("Log Update successfully!",'success');
-            console.log(response); // Debug: Check the response from the server
-            // Optionally, clear the form or refresh the UI
+            console.log(response);
+
             clearForm();
             $("#addMonitoringLogModal").modal("hide")
             fetchLogs()
         },
         error: function (xhr, status, error) {
             showAlert("Failed to Update the log. Please try again.",'error');
-            console.error(error); // Debug: Check for errors
+            console.error(error);
         }
     });
 
@@ -388,18 +388,18 @@ function fetchCropForLog(assignedCrops) {
 function fetchStaffForLog(assignedStaff) {
 
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Update with your actual endpoint
+        url: "http://localhost:8080/greenShadow/api/v1/staffs",
         type: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (staffList) {
-            // Assuming response is an array of FieldDto objects
+
             const staffSelect = $("#monitoringStaff");
             staffSelect.empty();
             staffSelect.append('<option value="">Select Staff</option>'); // Default option
 
-            // Populate the select element with fetched staff and pre-select assigned ones
+
             staffList.forEach(staff => {
                 const isSelected = assignedStaff && assignedStaff.some(s => s.staffId === staff.staffId);
                 const option = `<option value="${staff.staffId}" ${isSelected ? "selected" : ""}>${staff.firstName}</option>`;
@@ -476,18 +476,18 @@ function saveLog() {
     }
     // Perform AJAX request
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/logs", // Replace with your endpoint
+        url: "http://localhost:8080/greenShadow/api/v1/logs",
         type: "POST",
         data: formData,
-        processData: false, // Prevent jQuery from processing the data
-        contentType: false, // Set the content type to false for FormData
+        processData: false,
+        contentType: false,
         headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+            "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (response) {
             showAlert("Log saved successfully!",'success');
-            console.log(response); // Debug: Check the response from the server
-            // Optionally, clear the form or refresh the UI
+            console.log(response);
+
             clearForm();
             $("#addMonitoringLogModal").modal("hide")
             fetchLogs()
@@ -634,7 +634,7 @@ function fetchFieldsAndCropsToUI(logId) {
         url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}/related-entities`,
         method: 'GET',
         headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token") // Add the token header
+            "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (data) {
             // Select the log card using the unique logId
@@ -676,7 +676,7 @@ function fetchFieldsAndCropsToUI(logId) {
 }
 
 $("#logDeleteBtn").click(function () {
-    const logId = $("#logCode").val(); // Assuming a hidden input or other source for field ID.
+    const logId = $("#logCode").val();
 
     if (!logId) {
         if (!fieldId) {
@@ -703,10 +703,10 @@ $("#logDeleteBtn").click(function () {
             if (result.isConfirmed) {
                 // Proceed with the deletion action
                 $.ajax({
-                    url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`, // Your delete endpoint
+                    url: `http://localhost:8080/greenShadow/api/v1/logs/${logId}`,
                     type: "DELETE",
                     headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                        Authorization: "Bearer " + localStorage.getItem("token")
                     },
                     success: function (response) {
                         // Perform actions on successful deletion

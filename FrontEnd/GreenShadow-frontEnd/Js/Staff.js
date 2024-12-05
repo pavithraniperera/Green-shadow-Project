@@ -10,7 +10,7 @@ $(document).on("click", ".staff-row", function () {
 
 
 function toggleStaffEditMode() {
-    const staffId = $("#sId").val(); // Assume the button has a data attribute
+    const staffId = $("#sId").val();
     populateStaffDetails(staffId);
     // Close the staffDetailModal
     $('#staffDetailModal').modal('hide');
@@ -21,7 +21,7 @@ function toggleStaffEditMode() {
 }
 function populateStaffDetails(staffId) {
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}`, // Replace with your API endpoint
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}`,
         method: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
@@ -241,7 +241,7 @@ function clearStaffForm() {
     document.getElementById("assignedFieldsContainer").innerHTML = '';
     document.getElementById("assignedVehiclesContainer").innerHTML = '';
     addField(); // Add one initial field combo box
-   // addVehicle(); // Add one initial vehicle combo box
+
 }
 
 function fetchAllFieldsForStaff() {
@@ -252,10 +252,10 @@ function fetchAllFieldsForStaff() {
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         success: function (response) {
-            // Assuming response is an array of FieldDto objects
+
             const fieldSelect = $(".fieldForStaff");
             fieldSelect.empty(); // Clear existing options
-            fieldSelect.append('<option value="">Select Field</option>'); // Add default option
+            fieldSelect.append('<option value="">Select Field</option>');
 
             // Populate the select element with field names and IDs
             response.forEach(field => {
@@ -341,7 +341,7 @@ $("#addStaffBtn").click(function (){
 
 function fetchStaffData() {
     $.ajax({
-        url: "http://localhost:8080/greenShadow/api/v1/staffs", // Replace with your backend GET endpoint
+        url: "http://localhost:8080/greenShadow/api/v1/staffs",
         type: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
@@ -406,7 +406,7 @@ function populateModal(staff) {
 // Fetch assigned fields for the staff
 function fetchAssignedFields(staffId) {
     $.ajax({
-        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}/field`, // Replace with your endpoint
+        url: `http://localhost:8080/greenShadow/api/v1/staffs/${staffId}/field`,
         type: "GET",
         headers: {
             "Authorization": "Bearer " + localStorage.getItem("token")
@@ -432,7 +432,7 @@ $("#staffUpdateBtn").on("click", function () {
 });
 
 $("#staffDeleteBtn").click(function () {
-    const StaffId = $("#sId").val(); // Assuming a hidden input or other source for field ID.
+    const StaffId = $("#sId").val();
 
     if (!StaffId) {
         Swal.fire({
@@ -459,10 +459,10 @@ $("#staffDeleteBtn").click(function () {
             if (result.isConfirmed) {
                 // Proceed with the deletion action
                 $.ajax({
-                    url: `http://localhost:8080/greenShadow/api/v1/staffs/${StaffId}`, // Your delete endpoint
+                    url: `http://localhost:8080/greenShadow/api/v1/staffs/${StaffId}`,
                     type: "DELETE",
                     headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token") // Include JWT in Authorization header
+                        Authorization: "Bearer " + localStorage.getItem("token")
                     },
                     success: function (response) {
                         // Perform actions on successful deletion
